@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="product">
+
+	<!-- 상품 추가-->
+	<insert id="insert" parameterType="productvo">
+	<![CDATA[
+		insert into product
+		values(
+		null,
+		#{categoryNo},
+		#{name},
+		#{price},
+		#{shortDescription},
+		#{alignUse},
+		#{alignNo})
+	]]>
+	</insert>
+	
+	<!-- 상품추가 >> 상품 번호 리턴 -->
+	<select id="selectMaxProductNo" resultType="long">
+	<![CDATA[
+		select max(no) from product
+	]]>
+	</select>
+	
+	<!-- 진열 순서 -->
+	<select id="selectMaxAlignNo" parameterType="productvo" resultType="long">
+	<![CDATA[
+		select count(*)
+		from product
+		where categoryNo=#{categoryNo}
+	]]>
+	</select>
+	
+	<!-- 상품 목록 -->
+	<select id="selectAllByCategoryNo" parameterType="productvo" resultType="productvo">
+	<![CDATA[
+		select *
+		from product
+	]]>
+		<choose>
+		<when test="categoryNo!=null">
+	<![CDATA[
+		where categoryNo=#{categoryNo}
+		order by alignNo desc
+	]]>
+		</when>
+		<otherwise>
+	<![CDATA[
+		order by no desc
+	]]>
+		</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 상품 수정 -->
+	<update id="update" parameterType="productvo">
+	<![CDATA[
+		update product set
+		categoryNo=#{categoryNo},
+		name=#{name},
+		price=#{price},
+		shortDescription=#{shortDescription},
+		alignUse=#{alignUse}
+		where no=#{no}
+	]]>
+	</update>
+	
+	<!-- 상품 삭제 -->
+	<delete id="delete" parameterType="productvo">
+	<![CDATA[
+		delete
+		from product
+		where no=#{no}
+	]]>
+	</delete>
+	
+	<!-- 상품 삭제 >> 동일 카테고리 내 상품 진열번호 -1 -->
+	<update id="updateAlignNoWhenDelete" parameterType="productvo">
+	<![CDATA[
+		update product set
+		alignNo=alignNo-1
+		where categoryNo=#{categoryNo}
+		and alignNo>=#{alignNo}
+	]]>
+	</update>
+	
+	<!-- (회원) 상품 목록 -->
+	<select id="selectAllByCategoryNoAndAlignUse" parameterType="productvo" resultType="productvo">
+	<![CDATA[
+		select *
+		from product
+	]]>
+		<choose>
+		<when test="categoryNo!=null">
+	<![CDATA[
+		where categoryNo=#{categoryNo}
+		and alignUse="Y"
+		order by alignNo desc
+	]]>
+		</when>
+		<otherwise>
+	<![CDATA[
+		where alignUse="Y"
+		order by no desc
+	]]>
+		</otherwise>
+		</choose>
+	</select>
+	
+	<!-- (회원) 상품 상세 -->
+	<select id="selectProductDetailByNo" parameterType="productvo" resultType="productvo">
+	<![CDATA[
+		select *
+		from product
+		where no=#{no}
+	]]>
+	</select>
+
+</mapper>

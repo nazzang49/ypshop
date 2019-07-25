@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="productOption">
+
+	<!-- 상품옵션 추가-->
+	<insert id="insertProductOption" parameterType="productoptionvo">
+	<![CDATA[
+		insert into product_option
+		values(
+		null,
+		#{productNo},
+		#{firstOptionNo},
+		#{secondOptionNo},
+		#{remainAmount},
+		#{availableAmount})
+	]]>
+	</insert>
+	
+	<!-- 상품옵션 삭제 -->
+	<delete id="deleteProductOption" parameterType="long">
+	<![CDATA[
+		delete
+		from product_option
+		where no=#{no}
+	]]>
+	</delete>
+	
+	<!-- (회원) 상품옵션 목록 -->
+	<select id="selectAllProductOptionByNo" parameterType="productvo" resultType="productoptionvo">
+	<![CDATA[
+		select *
+		from product_option
+		where productNo=#{no}
+	]]>
+	</select>
+	
+</mapper>

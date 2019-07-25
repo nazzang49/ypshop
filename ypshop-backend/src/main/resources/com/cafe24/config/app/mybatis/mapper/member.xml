@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+
+	<!-- 아이디 중복 체크 -->
+	<select id="checkid" parameterType="membervo" resultType="membervo">
+	<![CDATA[
+		select *
+		from member
+		where id=#{id}
+	]]>
+	</select>
+
+	<!-- 조인 -->
+	<!-- 개인정보 암호화 -->
+	<insert id="insert" parameterType="membervo">
+	<![CDATA[
+		insert into member
+		values(
+		#{id},
+		aes_encrypt(#{password},#{keyValue}),
+		aes_encrypt(#{name},#{keyValue}),
+		aes_encrypt(#{address},#{keyValue}),
+		aes_encrypt(#{phone},#{keyValue}),
+		aes_encrypt(#{email},#{keyValue}),
+		#{role},
+		now())
+	]]>
+	</insert>
+	
+	<!-- 로그인 >> 복호화 후, 문자열 캐스팅 -->
+	<select id="selectByIdAndPassword" parameterType="membervo" resultType="membervo">
+	<![CDATA[
+		select
+		id,
+		cast(aes_decrypt(name, #{keyValue}) as char) as name,
+		cast(aes_decrypt(phone, #{keyValue}) as char) as phone,
+		cast(aes_decrypt(email, #{keyValue}) as char) as email,
+		cast(aes_decrypt(address, #{keyValue}) as char) as address,
+		regDate,
+		role
+		from member
+		where id=#{id}
+		and password=aes_encrypt(#{password}, #{keyValue})
+	]]>
+	</select>
+	
+	<!-- 회원조회 -->
+	<select id="selectById" parameterType="membervo" resultType="membervo">
+	<![CDATA[
+		select
+		id,
+		cast(aes_decrypt(name, #{keyValue}) as char) as name,
+		cast(aes_decrypt(phone, #{keyValue}) as char) as phone,
+		cast(aes_decrypt(email, #{keyValue}) as char) as email,
+		cast(aes_decrypt(address, #{keyValue}) as char) as address,
+		regDate,
+		role
+		from member
+		where id=#{id}
+	]]>
+	</select>
+	
+	<!-- security user -->
+	<select id="selectSecurityUserById" parameterType="string" resultType="membervo">
+	<![CDATA[
+		select
+		id,
+		cast(aes_decrypt(name, #{keyValue}) as char) as name,
+		cast(aes_decrypt(phone, #{keyValue}) as char) as phone,
+		cast(aes_decrypt(email, #{keyValue}) as char) as email,
+		cast(aes_decrypt(address, #{keyValue}) as char) as address,
+		regDate,
+		role
+		from member
+		where id=#{id}
+	]]>
+	</select>
+	
+	<!-- 회원수정 -->
+	<update id="update" parameterType="membervo">
+	<![CDATA[
+		update member set
+		password=aes_encrypt(#{password}, #{keyValue}),
+		name=aes_encrypt(#{name}, #{keyValue}),
+		address=aes_encrypt(#{address}, #{keyValue}),
+		phone=aes_encrypt(#{phone}, #{keyValue}),
+		email=aes_encrypt(#{email}, #{keyValue})
+		where id=#{id}
+	]]>
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<delete id="delete" parameterType="membervo">
+	<![CDATA[
+		delete
+		from member
+		where id=#{id}
+		and password=aes_encrypt(#{password}, #{keyValue})
+	]]>
+	</delete>
+	
+	<!-- (관리자) 회원 목록 -->
+	<select id="selectBySearch" parameterType="map" resultType="membervo">
+	<![CDATA[
+		select
+		id,
+		cast(aes_decrypt(name, #{keyValue}) as char) as name,
+		cast(aes_decrypt(phone, #{keyValue}) as char) as phone,
+		cast(aes_decrypt(email, #{keyValue}) as char) as email,
+		cast(aes_decrypt(address, #{keyValue}) as char) as address,
+		regDate,
+		role
+		from member
+	]]>
+		<if test="searchType=='id'">
+		<![CDATA[
+			where id like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<!-- 암호화 컬럼 검색 가능 -->
+		<if test="searchType=='name'">
+		<![CDATA[
+			where name like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='email'">
+		<![CDATA[
+			where email like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='address'">
+		<![CDATA[
+			where address like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+	<![CDATA[
+		order by regDate desc
+	]]>
+	</select>
+	
+	<!-- (관리자) 회원삭제 = 강제탈퇴 -->
+	<delete id="deleteByAdmin" parameterType="string">
+	<![CDATA[
+		delete
+		from member
+		where id=#{id}
+	]]>
+	</delete>
+	
+	<!-- (관리자) 회원 주문 목록 -->
+	<select id="selectOrderBySearch" parameterType="map" resultType="ordervo">
+	<![CDATA[
+		select o.orderDate, m.id as memberId, m.name as memberName, o.no, o.paymentCategory, o.paymentPrice
+		from orders o, member m
+		where o.memberId=m.id
+	]]>
+		<if test="searchType=='id'">
+		<![CDATA[
+			and memberId like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<!-- 암호화 컬럼 검색 가능 -->
+		<if test="searchType=='name'">
+		<![CDATA[
+			and memberName like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+	</select>
+	
+</mapper>

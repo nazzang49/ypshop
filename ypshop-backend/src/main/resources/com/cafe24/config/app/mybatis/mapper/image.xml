@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="image">
+
+	<!-- 이미지 추가 -->
+	<insert id="insert" parameterType="imagevo">
+	<![CDATA[
+		insert into image
+		values(
+		null,
+		#{productNo},
+		#{url},
+		#{repOrBasic},
+		now())
+	]]>
+	</insert>
+	
+	<!-- 이미지 삭제 -->
+	<delete id="delete" parameterType="long">
+	<![CDATA[
+		delete
+		from image
+		where no=#{no}
+	]]>
+	</delete>
+	
+	<!-- 이미지 목록 -->
+	<select id="selectAllImageByProductNo" parameterType="long" resultType="imagevo">
+	<![CDATA[
+		select *
+		from image
+		where productNo=#{productNo}
+		order by no desc
+	]]>
+	</select>
+	
+	<!-- 썸네일 -->
+	<select id="selectAllThumbnail" resultType="imagevo">
+	<![CDATA[
+		select i.url
+		from image i, product p
+		where i.productNo=p.no
+		and i.repOrBasic="R"
+		order by p.no desc
+	]]>
+	</select>
+	
+	<!-- 특정 카테고리 내 썸네일 -->
+	<select id="selectAllThumbnailByCategoryNo" parameterType="productvo" resultType="imagevo">
+	<![CDATA[
+		select i.url
+		from image i, product p, category c
+		where p.categoryNo=#{categoryNo}
+		and p.categoryNo=c.no
+		and p.no=i.productNo
+		and i.repOrBasic="R"
+		order by p.alignNo desc
+	]]>
+	</select>
+
+</mapper>

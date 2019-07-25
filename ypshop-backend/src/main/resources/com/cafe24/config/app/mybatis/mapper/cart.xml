@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cart">
+
+	<!-- 장바구니 추가 -->
+	<insert id="insert" parameterType="cartvo">
+	<![CDATA[
+		insert into cart
+		values(
+		null,
+		#{memberId},
+		#{productOptionNo},
+		#{cartAmount},
+		#{productPrice})
+	]]>
+	</insert>
+	
+	<!-- 장바구니 목록 -->
+	<select id="selectAllByMemberId" resultType="cartvo">
+	<![CDATA[
+		select *
+		from cart
+		where memberId=#{memberId}
+	]]>
+	</select>
+	
+	<!-- 장바구니 수정 -->
+	<update id="update" parameterType="cartvo">
+	<![CDATA[
+		update cart set
+		cartAmount=#{cartAmount},
+		productOptionNo=#{productOptionNo}
+		where no=#{no}
+	]]>
+	</update>
+	
+	<!-- 장바구니 삭제 -->
+	<delete id="delete" parameterType="long">
+	<![CDATA[
+		delete
+		from cart
+		where no=#{no}
+	]]>
+	</delete>
+	
+	<!-- 장바구니 조회 -->
+	<select id="selectByNo" parameterType="long" resultType="cartvo">
+	<![CDATA[
+		select *
+		from cart
+		where no=#{no}
+	]]>
+	</select>
+	
+
+</mapper>

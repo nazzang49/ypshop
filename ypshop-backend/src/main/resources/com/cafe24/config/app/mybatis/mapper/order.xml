@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="order">
+
+	<!-- 주문 추가 -->
+	<insert id="insert" parameterType="ordervo">
+	<![CDATA[
+		insert into orders
+		values(
+		null,
+		#{memberId},
+		aes_encrypt(#{customerName},#{keyValue}),
+		aes_encrypt(#{customerAddress},#{keyValue}),
+		aes_encrypt(#{customerPhone},#{keyValue}),
+		aes_encrypt(#{customerEmail},#{keyValue}),
+		aes_encrypt(#{receiverName},#{keyValue}),
+		aes_encrypt(#{receiverAddress},#{keyValue}),
+		aes_encrypt(#{receiverPhone},#{keyValue}),
+		#{receiverMsg},
+		now(),
+		#{paymentCategory},
+		#{paymentPrice},
+		default)
+	]]>
+	</insert>
+
+	<!-- 주문 상세 추가 -->
+	<insert id="insertOrderDetail" parameterType="cartvo">
+	<![CDATA[
+		insert into orders_detail
+		values(
+		null,
+		#{orderNo},
+		#{productOptionNo},
+		#{cartAmount},
+		#{cartPrice})
+	]]>
+	</insert>
+	
+	<!-- 주문 번호 -->
+	<select id="selectMaxOrderNo" resultType="long">
+	<![CDATA[
+		select max(no) from orders
+	]]>
+	</select>
+		
+	<!-- 주문 목록 -->
+	<select id="selectOrderByPeriod" parameterType="ordervo" resultType="ordervo">
+	<![CDATA[
+		select o.orderDate, o.paymentPrice, o.no, o.status, count(*) as size
+		from orders o, orders_detail od
+		where o.memberId=#{memberId}
+		and o.no=od.orderNo
+		and o.orderDate >= date_add(now(), interval #{period} month)
+		group by o.orderDate, o.paymentPrice, o.no, o.status
+	]]>
+	</select>
+	
+	<!-- 주문 상품별 기본 정보 -->
+	<select id="selectOrderDetailByPeriod" parameterType="ordervo" resultType="orderdetailvo">
+	<![CDATA[
+		select od.orderAmount, od.orderPrice, od.productOptionNo, p.name as productName, p.no as productNo, i.url as imageUrl 
+		from orders o, orders_detail od, product_option po, product p, image i
+		where o.memberId=#{memberId}
+		and o.no=od.orderNo
+		and od.productOptionNo=po.no
+		and po.productNo=p.no
+		and p.no=i.productNo
+		and i.repOrBasic="R"
+		and o.orderDate >= date_add(now(), interval #{period} month)
+	]]>
+	</select>
+	
+	<!-- 주문 상품별 1차 옵션 -->
+	<select id="selectFirstByProductOptionNo" parameterType="long" resultType="optionvo">
+	<![CDATA[
+		select *
+		from product_option po, option op
+        where po.firstOptionNo=op.no
+        and po.no=#{productOptionNo}
+	]]>
+	</select>
+	
+	<!-- 주문 상품별 2차 옵션 -->
+	<select id="selectSecondByProductOptionNo" parameterType="long" resultType="optionvo">
+	<![CDATA[
+		select *
+		from product_option po, option op
+        where po.secondOptionNo=op.no
+        and po.no=#{productOptionNo}
+	]]>
+	</select>
+	
+	
+</mapper>
