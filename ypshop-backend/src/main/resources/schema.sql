@@ -425,7 +425,8 @@ ALTER TABLE `orders`
 		)
 		REFERENCES `member` ( -- 회원
 			`id` -- 아이디
-		);
+		)
+		ON DELETE CASCADE;
 
 -- 상품
 ALTER TABLE `product`

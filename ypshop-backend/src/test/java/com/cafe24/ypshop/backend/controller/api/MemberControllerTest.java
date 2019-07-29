@@ -38,8 +38,8 @@ import com.cafe24.ypshop.backend.config.TestWebConfig;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes= {AppConfig.class, TestWebConfig.class})
 @WebAppConfiguration
-//@Transactional
-//@Rollback(true)
+@Transactional
+@Rollback(true)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MemberControllerTest {
 
@@ -65,13 +65,12 @@ public class MemberControllerTest {
 	}
 	
 	//아이디 중복 체크
-//	@Test
+	@Test
 	public void testBMemberCheckId() throws Exception {
-		//test >> api
 		//중복 O
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/member/checkid")
-						.param("id", "test")
+						.param("id", "user2")
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
@@ -82,7 +81,7 @@ public class MemberControllerTest {
 		//중복 X
 		resultActions = 
 				mockMvc.perform(post("/api/member/checkid")
-						.param("id", "test1")
+						.param("id", "test")
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
@@ -91,21 +90,59 @@ public class MemberControllerTest {
 		.andExpect(jsonPath("$.data.flag", is(false)));
 	}
 	
-//	@Test
-	public void _testAMemberJoin() throws Exception {
-		ResultActions resultActions = 
-				mockMvc.perform(post("/api/member/join").contentType(MediaType.APPLICATION_JSON));
-		
-		resultActions
-		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("success")));
-	}
-	
 	//조인
-//	@Test
+	@Test
 	public void testAMemberJoin() throws Exception {
 		//1. success
 		ResultActions resultActions = 
+				mockMvc.perform(post("/api/member/join")
+						.param("id", "test")
+						.param("name", "test")
+						.param("password", "jy@park2@@")
+						.param("phone", "01011111111")
+						.param("email", "test@gmail.com")
+						.param("address", "서울")
+						.param("role", "USER")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//2. fail >> invalidation in not null of id
+		resultActions = 
+				mockMvc.perform(post("/api/member/join")
+						.param("name","test")
+						.param("password", "jy@park2@@")
+						.param("phone", "01011111111")
+						.param("email", "test@gmail.com")
+						.param("address", "서울")
+						.param("role", "USER")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in length of id
+		resultActions = 
+				mockMvc.perform(post("/api/member/join")
+						.param("id", "testtesttesttesttesttest")
+						.param("name","test")
+						.param("password", "jy@park2@@")
+						.param("phone", "01011111111")
+						.param("email", "test@gmail.com")
+						.param("address", "서울")
+						.param("role", "USER")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in pattern of phone
+		resultActions = 
 				mockMvc.perform(post("/api/member/join")
 						.param("id", "test")
 						.param("name","test")
@@ -117,18 +154,17 @@ public class MemberControllerTest {
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
-		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 		
-		//invalidation in password = 비밀번호 입력값 실패 케이스
+		//2. fail >> invalidation in email of email
 		resultActions = 
 				mockMvc.perform(post("/api/member/join")
 						.param("id", "test")
 						.param("name","test")
-						.param("password", "test")
-						.param("phone", "010-1111-1111")
-						.param("email", "test@gmail.com")
+						.param("password", "jy@park2@@")
+						.param("phone", "01011111111")
+						.param("email", "test#gmail.com")
 						.param("address", "서울")
 						.param("role", "USER")
 						.contentType(MediaType.APPLICATION_JSON));
@@ -140,12 +176,12 @@ public class MemberControllerTest {
 	}
 	
 	//로그인
-//	@Test
+	@Test
 	public void testCMemberLogin() throws Exception {
-		//test >> api
+		//1. success 
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/member/login")
-						.param("id", "test")
+						.param("id", "user2")
 						.param("password","jy@park2@@")
 						.contentType(MediaType.APPLICATION_JSON));
 		
@@ -154,7 +190,7 @@ public class MemberControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//invalidation in id = 아이디 입력값 실패 케이스
+		//2. fail >> invalidation in not null of id
 		resultActions = 
 				mockMvc.perform(post("/api/member/login")
 						.param("password","jy@park2@@")
@@ -163,16 +199,51 @@ public class MemberControllerTest {
 		resultActions
 		.andExpect(status().isBadRequest()).andDo(print())
 		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in length of id
+		resultActions = 
+				mockMvc.perform(post("/api/member/login")
+						.param("id", "testtesttesttesttesttest")
+						.param("password","jy@park2@@")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in pattern of password
+		resultActions = 
+				mockMvc.perform(post("/api/member/login")
+						.param("id", "user2")
+						.param("password","test")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in length of password
+		resultActions = 
+				mockMvc.perform(post("/api/member/login")
+						.param("id", "user2")
+						.param("password","jy@park2@@jy@park2@@jy@park2@@")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		
 	}
 	
 	//회원조회
 	@Test
 	public void testDMemberRead() throws Exception {
-		String accessToken = obtainAccessToken("user2", "jy@park2@@");
+		String accessToken = obtainAccessToken("user2", "jy@park2@@", "USER");
 		
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/member/{id}","user2")
+				mockMvc.perform(get("/api/member/info/{id}","user2")
 						.header("Authorization", "Bearer " + accessToken)
 						.contentType(MediaType.APPLICATION_JSON));
 		
@@ -180,22 +251,30 @@ public class MemberControllerTest {
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.memberVO.id", is("user2")));
+		
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(get("/api/member/info/{id}","user2")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
 	}
 	
-	//회원수정 >> 아이디 및 권한 수정 불가
+	//회원수정 >> 아이디, 권한 수정 X
 	@Test
 	public void testEMemberUpdate() throws Exception {
-		String accessToken = obtainAccessToken("user2", "jy@park2@@");
+		String accessToken = obtainAccessToken("user2", "jy@park2@@", "USER");
 		
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(put("/api/member/update")
 						.header("Authorization", "Bearer " + accessToken)
-						.param("id", "test")
-						.param("name","test-update")
+						.param("id", "user2")
+						.param("name","jyp")
 						.param("password", "jy@park2@@")
-						.param("phone", "010-1111-1111")
-						.param("email", "test@naver.com")
+						.param("phone", "01022222222")
+						.param("email", "jyp@naver.com")
 						.param("address", "부산")
 						.contentType(MediaType.APPLICATION_JSON));
 		
@@ -204,30 +283,92 @@ public class MemberControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//invalidation in password = 비밀번호 입력값 실패 케이스
+		//2. fail >> invalidation in pattern of password
 		resultActions = 
 				mockMvc.perform(put("/api/member/update")
-						.param("id", "test")
-						.param("name","test-update")
-						.param("password", "test")
-						.param("phone", "010-1111-1111")
-						.param("email", "test@naver.com")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("id", "user2")
+						.param("name","jyp")
+						.param("password", "jyp")
+						.param("phone", "01022222222")
+						.param("email", "jyp@naver.com")
 						.param("address", "부산")
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isBadRequest()).andDo(print())
 		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in pattern of name
+		resultActions = 
+				mockMvc.perform(put("/api/member/update")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("id", "user2")
+						.param("name","jyp2")
+						.param("password", "jy@park2@@")
+						.param("phone", "01022222222")
+						.param("email", "jyp@naver.com")
+						.param("address", "부산")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in email of email
+		resultActions = 
+				mockMvc.perform(put("/api/member/update")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("id", "user2")
+						.param("name","jyp")
+						.param("password", "jy@park2@@")
+						.param("phone", "01022222222")
+						.param("email", "jyp#naver.com")
+						.param("address", "부산")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in not null of address
+		resultActions = 
+				mockMvc.perform(put("/api/member/update")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("id", "user2")
+						.param("name","jyp")
+						.param("password", "jy@park2@@")
+						.param("phone", "01022222222")
+						.param("email", "jyp#naver.com")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(delete("/api/member/delete/{id}", "user2")
+						.param("id", "user2")
+						.param("name","jyp")
+						.param("password", "jy@park2@@")
+						.param("phone", "01022222222")
+						.param("email", "jyp@naver.com")
+						.param("address", "부산")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
 	}
 		
 	//회원탈퇴
 	@Test
 	public void testFMemberDelete() throws Exception {
-		String accessToken = obtainAccessToken("user2", "jy@park2@@");
+		String accessToken = obtainAccessToken("user2", "jy@park2@@", "USER");
 		
 		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(delete("/api/member/delete/{id}","test")
+				mockMvc.perform(delete("/api/member/delete/{id}", "user2")
 						.header("Authorization", "Bearer " + accessToken)
 						.param("password", "jy@park2@@")
 						.contentType(MediaType.APPLICATION_JSON));
@@ -237,26 +378,34 @@ public class MemberControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//2. fail >> 
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(delete("/api/member/delete/{id}", "user2")
+						.param("password", "jy@park2@@")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
+		
 	}
 	
 	//액세스 토큰 발급
-	private String obtainAccessToken(String username, String password) throws Exception {
+	private String obtainAccessToken(String username, String password, String role) throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("grant_type", "password");
 		params.add("client_id", "ypshop");
 		params.add("username", username);
 		params.add("password", password);
-		params.add("scope", "USER");
+		params.add("scope", role);
 		
-		ResultActions resultActions =
-		mockMvc
-			.perform(post("/oauth/token")
-			.params(params)
-			.with(httpBasic("ypshop", "1234"))
-			.contentType(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk());
+		ResultActions resultActions = 
+			mockMvc
+				.perform(post("/oauth/token")
+				.params(params)
+				.with(httpBasic("ypshop", "1234"))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk());	
 		
 		String resultString = resultActions.andReturn().getResponse().getContentAsString();
 		JacksonJsonParser jsonParser = new JacksonJsonParser();

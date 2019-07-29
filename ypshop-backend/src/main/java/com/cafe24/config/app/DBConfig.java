@@ -43,8 +43,11 @@ public class DBConfig {
 	private DatabasePopulator createDatabasePopulator() {
 		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         databasePopulator.setContinueOnError(true);
+//      databasePopulator.addScripts(new ClassPathResource("schema.sql"),
+//				 					 new ClassPathResource("data.sql"));
         databasePopulator.addScripts(new ClassPathResource("oauth-schema.sql"),
         							 new ClassPathResource("oauth-data.sql"));
+        
         return databasePopulator;
 	}
 	

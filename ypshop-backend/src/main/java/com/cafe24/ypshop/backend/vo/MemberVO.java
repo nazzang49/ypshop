@@ -9,6 +9,7 @@ import com.cafe24.ypshop.backend.validator.constraints.ValidName;
 
 public class MemberVO {
 	
+	@NotEmpty
 	@Length(min=2, max=15, message="아이디의 길이는 최소 2, 최대 15")
 	private String id;
 	
@@ -27,7 +28,7 @@ public class MemberVO {
 	private String address;
 	
 	@NotEmpty
-	@Pattern(regexp="^01(?:0|1|[6-9])(\\d{3}|\\d{4})(\\d{4})$", message="휴대번호 형식 오류")
+	@Pattern(regexp="^01(?:0|1|[6-9])(\\d{3}|\\d{4})(\\d{4})$", message="휴대폰 번호 형식 오류")
 	private String phone;
 	
 	@NotEmpty

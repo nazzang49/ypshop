@@ -13,9 +13,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 //		http.headers().frameOptions().disable();
 
-		// 회원조회 API
+		//고객_회원 API
 		http
 			.authorizeRequests()
-			.antMatchers("/api/member/**").access("#oauth2.hasScope('USER')");
+			.antMatchers("/api/member/update").access("#oauth2.hasScope('USER')")
+			.antMatchers("/api/member/delete/**").access("#oauth2.hasScope('USER')")
+			.antMatchers("/api/member/info/**").access("#oauth2.hasScope('USER')")
+			.anyRequest()
+			.permitAll();
+		
 	}
 }

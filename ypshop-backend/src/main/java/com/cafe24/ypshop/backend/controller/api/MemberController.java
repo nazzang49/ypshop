@@ -109,7 +109,7 @@ public class MemberController {
 	}
 	
 	@ApiOperation(value="회원조회")
-	@GetMapping(value="/{id}")
+	@GetMapping(value="/info/{id}")
 	public JSONResult get(@ModelAttribute MemberVO memberVO) {
 		
 		//본인 인증

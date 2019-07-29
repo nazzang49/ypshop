@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,9 +53,14 @@ public class AdminCategoryControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
+	@Autowired
+	private FilterChainProxy springSecurityFilterChain;
+	
 	@Before
 	public void setup() throws Exception {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+				.addFilter(springSecurityFilterChain)
+				.build();
 	}
 	
 	//카테고리 목록
