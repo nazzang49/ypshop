@@ -9,22 +9,29 @@ import com.cafe24.ypshop.backend.validator.constraints.ValidName;
 
 public class MemberVO {
 	
-	@NotEmpty
+	@Length(min=2, max=15, message="아이디의 길이는 최소 2, 최대 15")
 	private String id;
+	
 	//비밀번호 >> 영문, 특수기호, 숫자 혼합
 	@Pattern(regexp="(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,20}", message="비밀번호는 8자 이상 20자 이하의 알파벳, 숫자, 특수문자를 조합하여 작성해야 합니다.") 
 	@Length(min=8, max=20)
 	private String password;
+	
 	//사용자 정의 valid 적용 가능
 	//@ValidName
 	@NotEmpty
+	@Pattern(regexp="^[가-힣|a-zA-Z]{2,20}$", message="이름 형식 오류")
 	private String name;
+	
 	@NotEmpty
 	private String address;
+	
 	@NotEmpty
+	@Pattern(regexp="^01(?:0|1|[6-9])(\\d{3}|\\d{4})(\\d{4})$", message="휴대번호 형식 오류")
 	private String phone;
-	@Email
+	
 	@NotEmpty
+	@Email
 	private String email;
 	private String role;
 	private String regDate;
@@ -35,18 +42,7 @@ public class MemberVO {
 	public MemberVO() {
 		
 	}
-	
-	public MemberVO(String id, String password, String name, String address, String phone, String email, String role, String regDate) {
-		this.id=id;
-		this.password=password;
-		this.name=name;
-		this.address=address;
-		this.phone=phone;
-		this.email=email;
-		this.role=role;
-		this.regDate=regDate;
-	}
-	
+		
 	public String getId() {
 		return id;
 	}

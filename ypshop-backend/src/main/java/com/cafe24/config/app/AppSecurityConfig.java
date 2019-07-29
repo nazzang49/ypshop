@@ -57,7 +57,7 @@ public class AppSecurityConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	@Bean(name="springSecurityFilterChain")
+//	@Bean(name="springSecurityFilterChain")
 	public FilterChainProxy filterChainProxy() throws Exception {
 		List<SecurityFilterChain> filterChains = new ArrayList<>();
 		
@@ -107,7 +107,7 @@ public class AppSecurityConfig {
 		
 		//CookieClearing
 		LogoutFilter logoutFilter = new LogoutFilter("/", cookieClearingLogoutHandler, securityContextLogoutHandler);
-		logoutFilter.setFilterProcessesUrl("/member/logout");
+		logoutFilter.setFilterProcessesUrl("/api/member/logout");
 		logoutFilter.afterPropertiesSet();
 		
 		return logoutFilter;
@@ -125,7 +125,7 @@ public class AppSecurityConfig {
 		usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
 		usernamePasswordAuthenticationFilter.setUsernameParameter("id");
 		usernamePasswordAuthenticationFilter.setPasswordParameter("password");
-		usernamePasswordAuthenticationFilter.setFilterProcessesUrl("/member/auth");
+		usernamePasswordAuthenticationFilter.setFilterProcessesUrl("/api/member/auth");
 		usernamePasswordAuthenticationFilter.setAllowSessionCreation(true);
 		usernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler());
 		usernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/member/login?result=fail"));
@@ -144,7 +144,7 @@ public class AppSecurityConfig {
 	@Bean
 	public ExceptionTranslationFilter exceptionTranslationFilter() {
 		ExceptionTranslationFilter exceptionTranslationFilter = 
-				new ExceptionTranslationFilter(new LoginUrlAuthenticationEntryPoint("/member/login"));
+				new ExceptionTranslationFilter(new LoginUrlAuthenticationEntryPoint("/api/member/login"));
 		
 		AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
 		accessDeniedHandler.setErrorPage("/WEB-INF/views/error/exception.jsp");
@@ -163,17 +163,12 @@ public class AppSecurityConfig {
 		filterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager());
 		
 		LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
-		requestMap.put(new AntPathRequestMatcher("/user/update"), SecurityConfig.createList("isAuthenticated()"));
-		requestMap.put(new AntPathRequestMatcher("/user/logout"), SecurityConfig.createList("isAuthenticated()"));
+		requestMap.put(new AntPathRequestMatcher("/api/member/update"), SecurityConfig.createList("isAuthenticated()"));
+		requestMap.put(new AntPathRequestMatcher("/api/member/logout"), SecurityConfig.createList("isAuthenticated()"));
 		
-		requestMap.put(new AntPathRequestMatcher("/board/write"), SecurityConfig.createList("isAuthenticated()"));
-		requestMap.put(new AntPathRequestMatcher("/board/delete"), SecurityConfig.createList("isAuthenticated()"));
-		requestMap.put(new AntPathRequestMatcher("/board/modify"), SecurityConfig.createList("isAuthenticated()"));
+		requestMap.put(new AntPathRequestMatcher("/api/board/write"), SecurityConfig.createList("isAuthenticated()"));
 		
-		requestMap.put(new AntPathRequestMatcher("/admin/**"), SecurityConfig.createList("hasRole('ADMIN')"));
-		
-		requestMap.put(new AntPathRequestMatcher("/gallery/upload"), SecurityConfig.createList("hasRole('ADMIN')"));
-		requestMap.put(new AntPathRequestMatcher("/gallery/delete/**"), SecurityConfig.createList("hasRole('ADMIN')"));
+		requestMap.put(new AntPathRequestMatcher("/api/admin/**"), SecurityConfig.createList("hasRole('ADMIN')"));
 		
 //		requestMap.put(new AntPathRequestMatcher("/**"), SecurityConfig.createList("permitAll"));
 		
@@ -189,7 +184,7 @@ public class AppSecurityConfig {
 	//적용 X
 	@Bean
 	public RememberMeAuthenticationFilter rememberMeAuthenticationFilter() {
-		TokenBasedRememberMeServices rememberMeServices = new TokenBasedRememberMeServices("mysite3", userDetailsService);
+		TokenBasedRememberMeServices rememberMeServices = new TokenBasedRememberMeServices("ypshop-backend", userDetailsService);
 		rememberMeServices.setParameter("remember-me");
 		
 		RememberMeAuthenticationFilter rememberMeAuthenticationFilter = 

@@ -133,6 +133,7 @@ public class UserOrderController {
 			List<ObjectError> errorList = br.getAllErrors();
 			for(ObjectError error : errorList) {
 				String msg = error.getDefaultMessage();
+				System.out.println("들어온다 : "+msg);
 				JSONResult result = JSONResult.fail(msg);
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 			}

@@ -50,22 +50,18 @@ public class AdminCategoryController {
 	
 	@ApiOperation(value="카테고리 목록")
 	@GetMapping(value="/list")
-	public JSONResult getList(@RequestParam(value="role") String role) {
+	public JSONResult getList() {
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
-		
-		//관리자 권한
-		if(!role.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
-			data.put("authorization", "not permitted");
-			JSONResult result = JSONResult.success(data);
-			return result;
-		}
 		
 		//관리자 인증
 		
 		List<CategoryVO> categoryList = adminCategoryService.카테고리목록();
 		
+		if(categoryList.isEmpty()) {
+			return JSONResult.fail("categoryList is null");
+		}
 		
 		data.put("categoryList", categoryList);
 		JSONResult result = JSONResult.success(data);
@@ -75,12 +71,9 @@ public class AdminCategoryController {
 	@ApiOperation(value="카테고리 추가")
 	@PostMapping(value="/add")
 	public ResponseEntity<JSONResult> add(@ModelAttribute @Valid CategoryVO categoryVO,
-						  				  BindingResult br,
-						  				  @AuthUser SecurityUser securityUser) {
+						  				  BindingResult br) {
 		
 		//관리자 인증
-		System.out.println("spring security 인증 : "+securityUser.getUsername());
-		
 		
 		//valid
 		if(br.hasErrors()) {
@@ -103,10 +96,9 @@ public class AdminCategoryController {
 	
 	@ApiOperation(value="카테고리 수정")
 	@PutMapping(value="/update/{no}")
-	public ResponseEntity<JSONResult> udpate(@ModelAttribute CategoryVO categoryVO,
-							 				 BindingResult br) {
-		//관리자 인증
+	public ResponseEntity<JSONResult> udpate(@ModelAttribute CategoryVO categoryVO) {
 		
+		//관리자 인증
 		
 		//valid >> 아이디, 비밀번호 2개 입력값 >> MemberVO에서 로그인 시 필요하지 않은 데이터 별도 처리 필요 or 에러 발생
 		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

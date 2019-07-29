@@ -282,14 +282,27 @@ public class AdminProductControllerTest {
 	//옵션 추가
 	@Test
 	public void testGOptionWrite() throws Exception {
+		
+		List<OptionVO> optionVOList = new ArrayList<>();
+		OptionVO optionVO1 = new OptionVO();
+		optionVO1.setName("pink");
+		optionVO1.setDepth(1L);
+		
+		OptionVO optionVO2 = new OptionVO();
+		optionVO2.setName("275");
+		optionVO2.setDepth(2L);
+		
+		optionVOList.add(optionVO1);
+		optionVOList.add(optionVO2);
+		
 		//test >> api
 		ResultActions resultActions = 
-				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 11L)
-						.param("name", "pink")
-						.param("depth", "1")
-						.param("name", "275")
-						.param("depth", "2")
-						.contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 1L)
+//						.param("name", "pink")
+//						.param("depth", "1")
+//						.param("name", "275")
+//						.param("depth", "2")
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(optionVOList)));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -318,7 +331,7 @@ public class AdminProductControllerTest {
 	
 	
 	/*
-	 * 상품옵션 >> 상품 상세 페이지에 노출될 실제 각 상품들의 옵션 및 재고 정보 
+	 * 상품옵션 >> 상품 상세 페이지에 노출될 실제 각 상품들의 옵션 및 재고 정보
 	 */
 	
 	

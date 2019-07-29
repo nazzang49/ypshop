@@ -1,29 +1,23 @@
 package com.cafe24.ypshop.backend.vo;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class CategoryVO {
 
 	private Long no;
 	@NotEmpty
+	@Length(min=1, max=30)
 	private String name;
 	@NotNull
 	private Long groupNo;
 	@NotNull
+	@Min(1)
 	private Long depth;
-	
-	public CategoryVO() {
-		
-	}
-	
-	public CategoryVO(Long no, String name, Long groupNo, Long depth) {
-		this.no=no;
-		this.name=name;
-		this.groupNo=groupNo;
-		this.depth=depth;
-	}
 	
 	public Long getNo() {
 		return no;

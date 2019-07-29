@@ -1,5 +1,7 @@
 package com.cafe24.ypshop.backend.vo;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class CartVO {
@@ -8,8 +10,10 @@ public class CartVO {
 	private String memberId;
 	@NotNull
 	private Long productOptionNo;
-	//상품별 수량
+	//상품별 수량 제한 >> 최소 1개, 최대 10개
 	@NotNull
+	@Min(1)
+	@Max(10)
 	private Long cartAmount;
 	//상품 가격
 	private Long cartPrice;
@@ -17,14 +21,6 @@ public class CartVO {
 		
 	public CartVO() {
 		
-	}
-	
-	public CartVO(Long no, String memberId, Long productOptionNo, Long cartAmount, Long cartPrice) {
-		this.no=no;
-		this.memberId=memberId;
-		this.productOptionNo=productOptionNo;
-		this.cartAmount=cartAmount;
-		this.cartPrice=cartPrice;
 	}
 	
 	public Long getOrderNo() {

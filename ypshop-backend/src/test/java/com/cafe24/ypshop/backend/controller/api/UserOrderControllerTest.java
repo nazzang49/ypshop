@@ -42,8 +42,8 @@ import com.google.gson.Gson;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes= {AppConfig.class, TestWebConfig.class})
 @WebAppConfiguration
-//@Transactional
-//@Rollback(true)
+@Transactional
+@Rollback(true)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserOrderControllerTest {
 
@@ -149,19 +149,19 @@ public class UserOrderControllerTest {
 	}
 	
 	//주문 + 주문 상세 추가
-//	@Test
+	@Test
 	public void testFOrderByCartWrite() throws Exception {
 		//test >> api
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/order/add")
-						.param("memberId", "user1")
+						.param("memberId", "user2")
 						.param("customerName", "박진영")
-						.param("customerAddress", "미국")
-						.param("customerPhone", "010-1111-1111")
+						.param("customerAddress", "11")
+						.param("customerPhone", "01011111111")
 						.param("customerEmail", "user1@naver.com")
 						.param("receiverName", "박우성")
 						.param("receiverAddress", "한국")
-						.param("receiverPhone", "010-2222-2222")
+						.param("receiverPhone", "01022222222")
 						.param("receiverMsg", "부재 시 경비실")
 						.param("paymentCategory", "계좌이체")
 						.param("paymentPrice", "140000")

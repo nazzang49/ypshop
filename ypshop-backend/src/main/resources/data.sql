@@ -9,6 +9,7 @@ insert into category values(null,"category1-3",1,3);
 insert into category values(null,"category2-1",2,1);
 insert into category values(null,"category2-2",2,2);
 insert into category values(null,"category2-3",2,3);
+insert into category values(null,"category3-1",1,1);
 
 -- 상품 초기화
 insert into product values(null, 1, "product1", 20000, "설명1", "N", 1);

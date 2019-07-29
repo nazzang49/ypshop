@@ -12,10 +12,10 @@ public class ProductOptionVO {
 	//2차 옵션
 	@NotNull
 	private Long secondOptionNo;
-	//재고수량 >> 비재고의 경우, -1
+	//재고수량 >> 비재고 -1
 	@NotNull
 	private Long remainAmount;
-	//판매가능수량 >> 비재고의 경우, -1
+	//판매가능수량 >> 비재고 -1
 	@NotNull
 	private Long availableAmount;
 	

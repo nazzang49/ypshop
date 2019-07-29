@@ -36,6 +36,7 @@ import com.cafe24.ypshop.backend.service.AdminImageService;
 import com.cafe24.ypshop.backend.service.AdminOptionService;
 import com.cafe24.ypshop.backend.service.AdminProductOptionService;
 import com.cafe24.ypshop.backend.service.AdminProductService;
+import com.cafe24.ypshop.backend.validator.CustomCollectionValidator;
 import com.cafe24.ypshop.backend.vo.OptionVO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.ProductVO;
@@ -60,6 +61,9 @@ public class AdminProductController {
 	
 	@Autowired
 	private AdminProductOptionService adminProductOptionService;
+	
+	@Autowired
+	private CustomCollectionValidator customCollectionValidator;
 	
 	@ApiOperation(value="상품 목록")
 	@GetMapping(value= {"/list", "/list/{categoryNo}"})
@@ -245,19 +249,29 @@ public class AdminProductController {
 	
 	@ApiOperation(value="옵션 추가")
 	@PostMapping(value="/{productNo}/option/add")
-	public ResponseEntity<JSONResult> OptionAdd(@RequestParam(value="name", required=true) List<String> optionNameList,
-												@RequestParam(value="depth", required=true) List<Long> optionDepthList,
-			   									@PathVariable(value="productNo") Long productNo) {
+	public ResponseEntity<JSONResult> OptionAdd(@RequestBody @Valid List<OptionVO> optionVOList,
+												BindingResult br) {
 		
 		//관리자 인증
 		
+		customCollectionValidator.validate(optionVOList, br);
+		
+		if(br.hasErrors()) {
+			List<ObjectError> errorList = br.getAllErrors();
+			for(ObjectError error : errorList) {
+				String msg = error.getDefaultMessage();
+				JSONResult result = JSONResult.fail(msg);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);	
+			}
+		}
+		
 		//valid by JS
 		
-		boolean flag = adminOptionService.옵션추가(optionNameList, optionDepthList, productNo);
+//		boolean flag = adminOptionService.옵션추가(optionNameList, optionDepthList, productNo);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
-		data.put("flag", flag);
+//		data.put("flag", flag);
 		JSONResult result = JSONResult.success(data);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}

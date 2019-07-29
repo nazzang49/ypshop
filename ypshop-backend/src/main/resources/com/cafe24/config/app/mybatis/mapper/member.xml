@@ -63,10 +63,11 @@
 	</select>
 	
 	<!-- security user -->
-	<select id="selectSecurityUserById" parameterType="string" resultType="membervo">
+	<select id="selectSecurityUserById" parameterType="map" resultType="membervo">
 	<![CDATA[
 		select
 		id,
+		cast(aes_decrypt(password, #{keyValue}) as char) as password,
 		cast(aes_decrypt(name, #{keyValue}) as char) as name,
 		cast(aes_decrypt(phone, #{keyValue}) as char) as phone,
 		cast(aes_decrypt(email, #{keyValue}) as char) as email,

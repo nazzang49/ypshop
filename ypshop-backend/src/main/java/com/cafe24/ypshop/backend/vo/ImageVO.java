@@ -1,7 +1,6 @@
 package com.cafe24.ypshop.backend.vo;
 
-import javax.validation.constraints.NotNull;
-
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 //일단, 기본 정보만 테스트
@@ -12,8 +11,9 @@ public class ImageVO {
 	private Long productNo;
 	//이미지 경로
 	@NotEmpty
+	@Length(min=5, max=300)
 	private String url;
-	//썸네일 or 기본 구분
+	//썸네일 or 기본
 	@NotEmpty
 	private String repOrBasic;
 	private String regDate;

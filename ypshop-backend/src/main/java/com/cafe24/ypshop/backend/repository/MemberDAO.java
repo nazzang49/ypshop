@@ -78,6 +78,9 @@ public class MemberDAO {
 	
 	//spring security
 	public MemberVO selectSecurityUserById(String id) {
-		return sqlSession.selectOne("member.selectSecurityUserById", id);
+		Map<String, String> map = new HashMap<>();
+		map.put("id", id);
+		map.put("keyValue", keyValue);
+		return sqlSession.selectOne("member.selectSecurityUserById", map);
 	}
 }

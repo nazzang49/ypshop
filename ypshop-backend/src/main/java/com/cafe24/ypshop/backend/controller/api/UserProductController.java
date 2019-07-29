@@ -40,12 +40,6 @@ public class UserProductController {
 			return result;
 		}
 		
-		//상품 없음
-		if(productList.isEmpty()) {
-			JSONResult result = JSONResult.fail("상품 없음");
-			return result;
-		}
-		
 		data.put("productList", productList);
 		JSONResult result = JSONResult.success(data);
 		return result;
@@ -53,8 +47,8 @@ public class UserProductController {
 	
 	//상품 상세 >> 기본 정보, 이미지, 옵션
 	@ApiOperation(value="상품 상세")
-	@GetMapping(value="/detail/{no}")
-	public JSONResult detail(@ModelAttribute ProductVO productVO) {
+	@GetMapping(value="/view/{no}")
+	public JSONResult view(@ModelAttribute ProductVO productVO) {
 		
 		Map<String, Object> data = userProductService.상품상세(productVO);
 		

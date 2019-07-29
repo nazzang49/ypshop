@@ -9,6 +9,7 @@ public class OrderDetailVO {
 	private Long orderAmount;
 	//상품가격
 	private Long orderPrice;
+	
 	//상품명
 	private String productName;
 	//상품번호

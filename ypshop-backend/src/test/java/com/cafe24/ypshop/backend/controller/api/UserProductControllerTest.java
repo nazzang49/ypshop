@@ -36,8 +36,8 @@ import com.google.gson.Gson;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes= {AppConfig.class, TestWebConfig.class})
 @WebAppConfiguration
-//@Transactional
-//@Rollback(true)
+@Transactional
+@Rollback(true)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserProductControllerTest {
 
@@ -61,7 +61,7 @@ public class UserProductControllerTest {
 	public void testAProductListRead() throws Exception {
 		//카테고리 O >> 진열번호 desc
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/product/list/{categoryNo}", 1L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/product/list/{categoryNo}", "test").contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -101,14 +101,22 @@ public class UserProductControllerTest {
 	//(회원) 상품 상세 >> 상품 기본, 이미지, 옵션
 	@Test
 	public void testBProductViewRead() throws Exception {
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/product/detail/{no}",1L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/product/view/{no}", 1L).contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.pvo.no", is(1)));
+		
+		//2. fail >> exception in dataType of no
+		resultActions = 
+				mockMvc.perform(get("/api/product/view/{no}", "test").contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 		
 		//범위 초과
 //		resultActions = 

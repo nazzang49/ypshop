@@ -20,8 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 		MemberVO memberVO = memberDAO.selectSecurityUserById(userName);
 		
-		System.out.println("memberVO username : "+memberVO.getId());
-		
 		SecurityUser securityUser = new SecurityUser();
 
 		if(memberVO!=null) {
@@ -33,5 +31,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		}
 		return securityUser;
 	}
-
 }

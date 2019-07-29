@@ -35,7 +35,7 @@ public class DBConfig {
 		basicDataSource.setInitialSize(env.getProperty("jdbc.initialSize", Integer.class));
 		basicDataSource.setMaxActive(env.getProperty("jdbc.maxActive", Integer.class));
 		
-//		DatabasePopulatorUtils.execute(createDatabasePopulator(), basicDataSource);
+		DatabasePopulatorUtils.execute(createDatabasePopulator(), basicDataSource);
 		
 		return basicDataSource;
 	}
@@ -43,8 +43,8 @@ public class DBConfig {
 	private DatabasePopulator createDatabasePopulator() {
 		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
         databasePopulator.setContinueOnError(true);
-        databasePopulator.addScripts(new ClassPathResource("schema.sql"),
-        							 new ClassPathResource("data.sql"));
+        databasePopulator.addScripts(new ClassPathResource("oauth-schema.sql"),
+        							 new ClassPathResource("oauth-data.sql"));
         return databasePopulator;
 	}
 	

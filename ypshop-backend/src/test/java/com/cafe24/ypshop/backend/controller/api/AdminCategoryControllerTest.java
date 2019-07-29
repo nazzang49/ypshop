@@ -11,13 +11,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,6 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.cafe24.ypshop.backend.config.AppConfig;
 import com.cafe24.ypshop.backend.config.TestWebConfig;
+import com.cafe24.ypshop.backend.security.SecurityUser;
 
 //(관리자) 카테고리 관리 컨트롤러 테스트
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,36 +52,17 @@ public class AdminCategoryControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
-	@BeforeClass
-	public static void setDB() {
-		
-	}
-	
 	@Before
 	public void setup() throws Exception {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-		
-		ResultActions resultActions = 
-				mockMvc.perform(post("/api/member/login")
-						.param("id", "user2")
-						.param("password", "jy@park2@@")
-						.contentType(MediaType.APPLICATION_JSON));
-		
-		resultActions
-		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
 	}
 	
 	//카테고리 목록
 	@Test
-	@WithMockUser(username="ADMIN")
 	public void testBCategoryListRead() throws Exception {
-		
-		//1. 성공
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(get("/api/admin/category/list")
-						.param("role", "ADMIN")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -87,25 +74,13 @@ public class AdminCategoryControllerTest {
 		.andExpect(jsonPath("$.data.categoryList[1].no", is(2)))
 		.andExpect(jsonPath("$.data.categoryList[1].name", is("category1-2")))
 		.andExpect(jsonPath("$.data.categoryList[1].depth", is(2)));
-		
-		//2. 실패 = unauthorization in role
-		resultActions = 
-				mockMvc.perform(get("/api/admin/category/list")
-						.param("role", "USER")
-						.contentType(MediaType.APPLICATION_JSON));
-		
-		resultActions
-		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("fail")))
-		.andExpect(jsonPath("$.data.authorization", is("permit admin only")));
-		
 
 	}
 	
 	//카테고리 추가
 	@Test
 	public void testACategoryWrite() throws Exception {
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/admin/category/add")
 						.param("name", "category3-1")
@@ -118,9 +93,45 @@ public class AdminCategoryControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//invalidation in name = 이름 입력값 실패 케이스
+		//2. fail >> invalidation in not empty of name
 		resultActions = 
 				mockMvc.perform(post("/api/admin/category/add")
+						.param("groupNo", "3")
+						.param("depth", "1")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in length of name
+		resultActions = 
+				mockMvc.perform(post("/api/admin/category/add")
+						.param("name", "category3-1category3-1category3-1category3-1category3-1")
+						.param("groupNo", "3")
+						.param("depth", "1")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in not null of groupNo
+		resultActions = 
+				mockMvc.perform(post("/api/admin/category/add")
+						.param("name", "category3-1category3-1category3-1category3-1category3-1")
+						.param("depth", "1")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in not null of depth
+		resultActions = 
+				mockMvc.perform(post("/api/admin/category/add")
+						.param("name", "category3-1category3-1category3-1category3-1category3-1")
+						.param("groupNo", "3")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -131,7 +142,7 @@ public class AdminCategoryControllerTest {
 	//카테고리 수정
 	@Test
 	public void testCCategoryUpdate() throws Exception {
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(put("/api/admin/category/update/{no}",1L)
 						.param("name", "update-category1-1")
@@ -142,9 +153,19 @@ public class AdminCategoryControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//invalidation in name = 이름 입력값 실패 케이스
+		//2. fail >> invalidation in not empty of name
 		resultActions = 
 				mockMvc.perform(put("/api/admin/category/update/{no}",1L)
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in length of name
+		resultActions = 
+				mockMvc.perform(put("/api/admin/category/update/{no}",1L)
+						.param("name", "update-category1-1update-category1-1update-category1-1update-category1-1")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -155,8 +176,27 @@ public class AdminCategoryControllerTest {
 	//카테고리 삭제
 	@Test
 	public void testDCategoryDelete() throws Exception {
-		//카테고리 참조 상품 O >> 삭제 불가
+		//1. success
 		ResultActions resultActions = 
+				mockMvc.perform(delete("/api/admin/category/delete/{no}",7L)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//2. fail >> invalidation in type of no
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/category/delete/{no}", "test")
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> FK
+		resultActions = 
 				mockMvc.perform(delete("/api/admin/category/delete/{no}",1L)
 						.contentType(MediaType.APPLICATION_JSON));
 	

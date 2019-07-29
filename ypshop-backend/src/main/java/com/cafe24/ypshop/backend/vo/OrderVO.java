@@ -3,33 +3,54 @@ package com.cafe24.ypshop.backend.vo;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class OrderVO {
 	
-	//pk
 	private Long no;
 	private String memberId;
+	
 	@NotEmpty
+	@Pattern(regexp="^[가-힣|a-zA-Z]{2,20}$", message="이름 형식 오류")
 	private String customerName;
-	@NotEmpty
+	
+	@Length(min=1, max=100)
 	private String customerAddress;
+	
 	@NotEmpty
+	@Pattern(regexp="^01(?:0|1|[6-9])(\\d{3}|\\d{4})(\\d{4})$", message="휴대번호 형식 오류")
 	private String customerPhone;
+	
 	@NotEmpty
+	@Email
 	private String customerEmail;
+	
 	@NotEmpty
+	@Pattern(regexp="^[가-힣|a-zA-Z]{2,20}$", message="이름 형식 오류")
 	private String receiverName;
+	
 	@NotEmpty
+	@Length(min=1, max=100)
 	private String receiverAddress;
+	
 	@NotEmpty
+	@Pattern(regexp="^01(?:0|1|[6-9])(\\d{3}|\\d{4})(\\d{4})$", message="휴대번호 형식 오류")
 	private String receiverPhone;
+	
 	@NotEmpty
+	@Length(min=1, max=200)
 	private String receiverMsg;
 	private String orderDate;
+	
 	@NotEmpty
+	@Length(min=1, max=30)
 	private String paymentCategory;
+	
 	@NotNull
 	private Long paymentPrice;
 	private String status;

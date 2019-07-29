@@ -12,7 +12,7 @@ import com.cafe24.ypshop.backend.config.TestMVCConfig;
 @Configuration
 @EnableWebMvc
 @EnableAspectJAutoProxy
-@ComponentScan({"com.cafe24.ypshop.backend.controller", "com.cafe24.ypshop.backend.exception", "com.cafe24.ypshop.backend.controller.api"})
+@ComponentScan({"com.cafe24.ypshop.backend.controller", "com.cafe24.ypshop.backend.exception", "com.cafe24.ypshop.backend.controller.api", "com.cafe24.ypshop.backend.validator"})
 @Import({TestMVCConfig.class, MessageConfig.class, SwaggerConfig.class})
 public class TestWebConfig {
 	
