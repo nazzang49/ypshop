@@ -479,7 +479,8 @@ ALTER TABLE `orders_detail`
 		)
 		REFERENCES `product_option` ( -- 상품옵션
 			`no` -- 번호
-		);
+		)
+		ON DELETE CASCADE;
 
 -- 옵션
 ALTER TABLE `option`
@@ -511,7 +512,8 @@ ALTER TABLE `product_option`
 		)
 		REFERENCES `option` ( -- 옵션
 			`no` -- 번호
-		);
+		)
+		ON DELETE CASCADE;
 
 -- 상품옵션
 ALTER TABLE `product_option`
@@ -521,7 +523,8 @@ ALTER TABLE `product_option`
 		)
 		REFERENCES `option` ( -- 옵션
 			`no` -- 번호
-		);
+		)
+		ON DELETE CASCADE;
 
 -- 이미지
 ALTER TABLE `image`

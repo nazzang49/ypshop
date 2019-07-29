@@ -160,9 +160,25 @@ public class AdminProductController {
 	
 	@ApiOperation(value="상품 삭제")
 	@DeleteMapping(value="/delete/{no}")
-	public JSONResult productDelete(@ModelAttribute ProductVO productVO) {
+	public ResponseEntity<JSONResult> productDelete(@ModelAttribute ProductVO productVO) {
 		
 		//관리자 인증
+		
+		//valid
+		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+		Set<ConstraintViolation<ProductVO>> validatorResults = validator.validateProperty(productVO, "categoryNo");
+		
+		if(!validatorResults.isEmpty()) {
+			String msg = "";
+			for(ConstraintViolation<ProductVO> validatorResult : validatorResults) {
+				if("categoryNo".equals(validatorResult.getPropertyPath().toString())) {
+					msg = messageSource.getMessage("NotNull.productVO.categoryNo", null, LocaleContextHolder.getLocale());
+					break;
+				}
+			}
+			JSONResult result = JSONResult.fail(msg);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+		}
 		
 		boolean flag = adminProductService.상품삭제(productVO);
 		
@@ -170,7 +186,7 @@ public class AdminProductController {
 		Map<String, Object> data = new HashMap<>();
 		data.put("flag", flag);
 		JSONResult result = JSONResult.success(data);
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	
 	

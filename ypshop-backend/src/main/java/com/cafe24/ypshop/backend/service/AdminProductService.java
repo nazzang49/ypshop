@@ -65,8 +65,6 @@ public class AdminProductService {
 		productDao.delete(productVO);
 		productDao.updateAlignNoWhenDelete(productVO);
 		return true;
-		
-		
 	}
 	
 	//진열 여부 및 번호 수정
