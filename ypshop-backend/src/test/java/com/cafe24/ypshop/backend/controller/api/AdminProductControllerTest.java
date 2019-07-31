@@ -373,14 +373,16 @@ public class AdminProductControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//2. fail >> invalidation in not null of no
+		//2. success with no results
 		resultActions = 
 				mockMvc.perform(delete("/api/admin/product/image/delete",1L)
 						.header("Authorization", "Bearer " + accessToken)
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
-		.andExpect(status().isBadRequest()).andDo(print());
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.flag", is(true)));
 		
 		//2. fail >> unauthorization
 		resultActions = 
