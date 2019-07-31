@@ -210,7 +210,7 @@ public class AdminProductController {
 	
 	@ApiOperation(value="이미지 삭제")
 	@DeleteMapping(value="/image/delete")
-	public ResponseEntity<JSONResult> imageDelete(@RequestParam(value="no", required=true) List<Long> imageNoList) {
+	public ResponseEntity<JSONResult> imageDelete(@RequestParam(value="no", required=true, defaultValue="0") List<Long> imageNoList) {
 		
 		//관리자 인증
 		

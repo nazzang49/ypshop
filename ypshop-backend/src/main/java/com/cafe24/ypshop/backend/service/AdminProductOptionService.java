@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cafe24.ypshop.backend.repository.ProductOptionDAO;
 import com.cafe24.ypshop.backend.vo.ProductOptionVO;
 
@@ -14,6 +16,7 @@ public class AdminProductOptionService {
 	@Autowired
 	private ProductOptionDAO productOptionDao;
 	
+	@Transactional
 	public boolean 상품옵션추가(List<Long> firstOptionNoList,
 							 List<Long> secondOptionNoList,
 							 List<Long> remainAmountList,
