@@ -9,14 +9,29 @@ public class OrderDetailVO {
 	private Long orderAmount;
 	//상품가격
 	private Long orderPrice;
-	
 	//상품명
 	private String productName;
+	//1차 옵션명
+	private String firstOptionName;
+	//2차 옵션명
+	private String secondOptionName;
+	//썸네일
+	private String imageUrl;
 	//상품번호
 	private Long productNo;
-	//대표 이미지
-	private String imageUrl;
 	
+	public String getFirstOptionName() {
+		return firstOptionName;
+	}
+	public void setFirstOptionName(String firstOptionName) {
+		this.firstOptionName = firstOptionName;
+	}
+	public String getSecondOptionName() {
+		return secondOptionName;
+	}
+	public void setSecondOptionName(String secondOptionName) {
+		this.secondOptionName = secondOptionName;
+	}
 	public String getImageUrl() {
 		return imageUrl;
 	}
@@ -70,7 +85,8 @@ public class OrderDetailVO {
 	public String toString() {
 		return "OrderDetailVO [no=" + no + ", orderNo=" + orderNo + ", productOptionNo=" + productOptionNo
 				+ ", orderAmount=" + orderAmount + ", orderPrice=" + orderPrice + ", productName=" + productName
-				+ ", productNo=" + productNo + ", imageUrl=" + imageUrl + "]";
+				+ ", firstOptionName=" + firstOptionName + ", secondOptionName=" + secondOptionName + ", imageUrl="
+				+ imageUrl + ", productNo=" + productNo + "]";
 	}
 	
 }

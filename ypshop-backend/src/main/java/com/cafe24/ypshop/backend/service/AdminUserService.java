@@ -3,7 +3,10 @@ package com.cafe24.ypshop.backend.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cafe24.ypshop.backend.repository.MemberDAO;
+import com.cafe24.ypshop.backend.repository.OrderDAO;
 import com.cafe24.ypshop.backend.vo.MemberVO;
 import com.cafe24.ypshop.backend.vo.OrderVO;
 
@@ -20,13 +23,12 @@ public class AdminUserService {
 	}
 	
 	//회원 삭제
+	@Transactional
 	public boolean 회원삭제(List<String> userIdList) {
-		boolean flag = true;
-		
 		for(String id : userIdList) {
-			flag = memberDao.deleteByAdmin(id);
+			memberDao.deleteByAdmin(id);
 		}
-		return flag;
+		return true;
 	}
 	
 	//회원 주문 목록

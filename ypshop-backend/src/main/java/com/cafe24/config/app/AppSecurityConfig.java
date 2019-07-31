@@ -57,7 +57,7 @@ public class AppSecurityConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-//	@Bean(name="springSecurityFilterChain")
+	//@Bean(name="springSecurityFilterChain")
 	public FilterChainProxy filterChainProxy() throws Exception {
 		List<SecurityFilterChain> filterChains = new ArrayList<>();
 		
@@ -97,7 +97,7 @@ public class AppSecurityConfig {
 		return new SecurityContextPersistenceFilter(new HttpSessionSecurityContextRepository());
 	}
 	
-	//CustomLogoutSuccessHandler >> API의 경우, 로그아웃 시 JSON 응답 처리되므로 
+	//CustomLogoutSuccessHandler >> API의 경우, 로그아웃 시 JSON 응답 처리
 	@Bean
 	public LogoutFilter logoutFilter() throws ServletException {
 		CookieClearingLogoutHandler cookieClearingLogoutHandler = new CookieClearingLogoutHandler("JSESSIONID");

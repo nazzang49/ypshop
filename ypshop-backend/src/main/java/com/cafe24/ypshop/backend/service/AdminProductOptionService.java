@@ -35,6 +35,7 @@ public class AdminProductOptionService {
 		boolean flag = true;
 		
 		for(Long no : firstOptionNoList) {
+			System.out.println("상품 옵션 번호 : "+no);
 			flag = productOptionDao.deleteProductOption(no);
 		}
 		return flag;

@@ -39,5 +39,14 @@
 		where no=#{no}
 	]]>
 	</delete>
+	
+	<!-- 카테고리 중복 체크 -->
+	<select id="checkExist" resultType="categoryvo" parameterType="categoryvo">
+	<![CDATA[
+		select *
+		from category
+		where name=#{name}
+	]]>
+	</select>
 
 </mapper>

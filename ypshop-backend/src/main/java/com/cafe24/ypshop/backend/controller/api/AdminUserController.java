@@ -33,25 +33,25 @@ public class AdminUserController {
 	
 	@ApiOperation(value="회원 목록")
 	@GetMapping(value="/list")
-	public JSONResult getUserList(@RequestParam(value="searchType") String searchType,
-							  @RequestParam(value="searchKwd") String searchKwd) {
+	public JSONResult getUserList(@RequestParam(value="searchType", required=true, defaultValue="") String searchType,
+								  @RequestParam(value="searchKwd", required=true, defaultValue="") String searchKwd) {
 		
 		//관리자 인증
 		
 		//valid by JS
 		
-		List<MemberVO> userList = adminUserService.회원목록(searchType, searchKwd);
+		List<MemberVO> memberList = adminUserService.회원목록(searchType, searchKwd);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
-		data.put("userList", userList);
+		data.put("memberList", memberList);
 		JSONResult result = JSONResult.success(data);
 		return result;
 	}
 	
 	@ApiOperation(value="회원 삭제")
 	@DeleteMapping(value="/delete")
-	public JSONResult deleteUser(@RequestParam(value="id") List<String> userIdList) {
+	public JSONResult deleteUser(@RequestParam(value="id", required=true, defaultValue="") List<String> userIdList) {
 		
 		//관리자 인증
 		
@@ -68,8 +68,8 @@ public class AdminUserController {
 	
 	@ApiOperation(value="회원 주문 목록")
 	@GetMapping(value="/order/list")
-	public JSONResult getUserOrderList(@RequestParam(value="searchType") String searchType,
-									   @RequestParam(value="searchKwd") String searchKwd) {
+	public JSONResult getUserOrderList(@RequestParam(value="searchType", required=true, defaultValue="") String searchType,
+			  						   @RequestParam(value="searchKwd", required=true, defaultValue="") String searchKwd) {
 		
 		//관리자 인증
 		

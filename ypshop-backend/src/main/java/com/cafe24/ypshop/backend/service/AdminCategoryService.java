@@ -35,4 +35,12 @@ public class AdminCategoryService {
 		return cateogryDao.delete(no);
 	}
 	
+	//카테고리 중복 체크
+	public boolean 카테고리중복체크(CategoryVO categoryVO) {
+		CategoryVO cvo = cateogryDao.checkExist(categoryVO);
+		if(cvo!=null) {
+			return true;
+		}
+		return false;
+	}
 }

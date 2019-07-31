@@ -46,28 +46,22 @@ public class UserProductControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
-	@BeforeClass
-	public static void setDB() {
-		
-	}
-	
 	@Before
 	public void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 	}
 	
-	//(회원) 상품 목록 by 카테고리 번호
+	//(회원) 상품 목록
 	@Test
 	public void testAProductListRead() throws Exception {
 		//카테고리 O >> 진열번호 desc
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/product/list/{categoryNo}", "test").contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/product/list/{categoryNo}", 2L).contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.productList[0].no", is(2)))
-		.andExpect(jsonPath("$.data.productList[1].no", is(1)));
+		.andExpect(jsonPath("$.data.productList[0].no", is(2)));
 		
 		//카테고리 X >> 상품번호 desc
 		resultActions = 
@@ -76,26 +70,26 @@ public class UserProductControllerTest {
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.productList[0].no", is(2)))
-		.andExpect(jsonPath("$.data.productList[1].no", is(1)));
+		.andExpect(jsonPath("$.data.productList[0].no", is(4)))
+		.andExpect(jsonPath("$.data.productList[1].no", is(2)));
 		
-		//fail >> 범위 초과
+		//1. success >> over range of categoryNo
 		resultActions = 
-				mockMvc.perform(get("/api/product/list/{categoryNo}", 10000L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/product/list/{categoryNo}", 99999L).contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("fail")))
-		.andExpect(jsonPath("$.data.returnPage", is("redirect:/api/product/list")));
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data", is("상품 목록 없음")));
 		
-		//상품 없음
-//		resultActions = 
-//				mockMvc.perform(get("/api/product/list").contentType(MediaType.APPLICATION_JSON));
-//		
-//		resultActions
-//		.andExpect(status().isOk()).andDo(print())
-//		.andExpect(jsonPath("$.result", is("success")))
-//		.andExpect(jsonPath("$.data.alert", is("None of products is available")));
+		//2. fail >> invalidation in dataType of categoryNo
+		resultActions = 
+				mockMvc.perform(get("/api/product/list/{categoryNo}", "test").contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
 	}
 	
 	//(회원) 상품 상세 >> 상품 기본, 이미지, 옵션
@@ -110,7 +104,16 @@ public class UserProductControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.pvo.no", is(1)));
 		
-		//2. fail >> exception in dataType of no
+		//1. success >> over range of no
+		resultActions = 
+				mockMvc.perform(get("/api/product/view/{no}", 99999L).contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data", is("상품 없음")));
+		
+		//2. fail >> invalidation in dataType of no
 		resultActions = 
 				mockMvc.perform(get("/api/product/view/{no}", "test").contentType(MediaType.APPLICATION_JSON));
 		
@@ -118,20 +121,6 @@ public class UserProductControllerTest {
 		.andExpect(status().isBadRequest()).andDo(print())
 		.andExpect(jsonPath("$.result", is("fail")));
 		
-		//범위 초과
-//		resultActions = 
-//				mockMvc.perform(get("/api/product/detail/{no}",99999L).contentType(MediaType.APPLICATION_JSON));
-//		
-//		resultActions
-//		.andExpect(status().isOk()).andDo(print())
-//		.andExpect(jsonPath("$.result", is("success")))
-//		.andExpect(jsonPath("$.data.returnPage", is("redirect:/api/product/list")));
 	}
-	
-	@AfterClass
-	public static void resetDB() {
-		
-	}
-	
 	
 }

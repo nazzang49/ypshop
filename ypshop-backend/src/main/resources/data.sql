@@ -1,6 +1,6 @@
 -- 관리자 및 회원 초기화
-insert into member values("user1", aes_encrypt("jy@park2@@","shop-keyValue"), aes_encrypt("user1","sho-keyValue"), aes_encrypt("부산","shop-keyValue"), aes_encrypt("010","shop-keyValue"), aes_encrypt("user1@shop.com","shop-keyValue"), "ADMIN", now());
-insert into member values("user2", aes_encrypt("jy@park2@@","shop-keyValue"), aes_encrypt("user2","sho-keyValue"), aes_encrypt("부산","shop-keyValue"), aes_encrypt("010","shop-keyValue"), aes_encrypt("user2@shop.com","shop-keyValue"), "USER", now());
+insert into member values("user1", aes_encrypt("jy@park2@@","shop-keyValue"), aes_encrypt("user1","shop-keyValue"), aes_encrypt("부산","shop-keyValue"), aes_encrypt("010","shop-keyValue"), aes_encrypt("user1@shop.com","shop-keyValue"), "ADMIN", now());
+insert into member values("user2", aes_encrypt("jy@park2@@","shop-keyValue"), aes_encrypt("user2","shop-keyValue"), aes_encrypt("부산","shop-keyValue"), aes_encrypt("010","shop-keyValue"), aes_encrypt("user2@shop.com","shop-keyValue"), "USER", now());
 
 -- 카테고리 초기화
 insert into category values(null,"category1-1",1,1);
@@ -66,8 +66,8 @@ insert into orders values(null, "user2", aes_encrypt("박진영","shop-order"), 
 insert into orders values(null, "user2", aes_encrypt("박진영","shop-order"), aes_encrypt("서울","shop-order"), aes_encrypt("010","shop-order"), aes_encrypt("user2@shop.com","shop-order"), aes_encrypt("안영남","shop-order"), aes_encrypt("광주","shop-order"), aes_encrypt("010","shop-order"), "부재 시 경비실", now(), "무통장", 60000, "주문 확인");
 
 -- 주문상세 초기화
-insert into orders_detail values(null, 1, 1, 5, 20000);
-insert into orders_detail values(null, 1, 2, 10, 30000);
-insert into orders_detail values(null, 2, 3, 3, 40000);
-insert into orders_detail values(null, 2, 4, 2, 50000);
-insert into orders_detail values(null, 3, 5, 1, 60000);
+insert into orders_detail values(null, 1, 1, "product1", "black", "L", "image1", 5, 20000);
+insert into orders_detail values(null, 1, 2, "product2", "white", "M", "image2", 10, 30000);
+insert into orders_detail values(null, 2, 3, "product3", "green", "S", "image3", 3, 40000);
+insert into orders_detail values(null, 2, 4, "product4", "blue", "XS", "image4", 2, 50000);
+insert into orders_detail values(null, 3, 5, "product5", "yellow", "XL", "image5", 5, 60000);

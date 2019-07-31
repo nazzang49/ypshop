@@ -34,7 +34,7 @@ public class CartDAO {
 		return sqlSession.delete("cart.delete", no)==1;
 	}
 	
-	//(회원) 장바구니 조회
+	//(회원) 장바구니 >> 주문
 	public CartVO selectByNo(Long no) {
 		return sqlSession.selectOne("cart.selectByNo", no);
 	}

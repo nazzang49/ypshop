@@ -21,27 +21,30 @@ public class AdminImageService {
 		return imageDao.selectAllImageByProductNo(productNo);
 	}
 	
-	//이미지 추가 >> 리스트 처리
-	public boolean 이미지추가(List<String> imageUrlList, Long productNo) {
-		boolean flag = true;
-		for(String url : imageUrlList) {
-		
-			//이미지 경로 작업
-			
-			//1개 이상 실패 >> fail
-			flag = imageDao.insert(new ImageVO(productNo, url, "B"));
+	//이미지 추가
+	public String 이미지추가(List<String> imageUrlList, Long productNo) {
+		StringBuilder returnMsg = new StringBuilder();
+		for(int i=0;i<imageUrlList.size();i++) {
+			String imageUrl = imageUrlList.get(i);
+			//중복 X >> 추가 성공 >> 성공 메시지
+			if(imageDao.checkExist(productNo, imageUrl)==null) imageDao.insert(new ImageVO(productNo, imageUrl, "B"));
+			//중복 O >> 추가 실패 >> 실패 메시지
+			else {
+				returnMsg.append((i+1)+"번 ");
+				continue;
+			}
 		}
-		return flag;
+		if(returnMsg.toString().contains("번")) {
+			return returnMsg.append("이미지 추가 실패 >> 중복").toString();
+		}
+		return returnMsg.append("이미지 추가 성공").toString();
 	}
 	
 	//이미지 삭제
+	@Transactional
 	public boolean 이미지삭제(List<Long> imageNoList) {
-		boolean flag = true;
-		for(Long no : imageNoList) {
-			//1개 이상 실패 >> fail
-			flag = imageDao.delete(no);
-		}
-		return flag;
+		for(Long no : imageNoList) imageDao.delete(no);
+		return true;
 	}
 	
 	//특정 카테고리 내 상품 썸네일 목록 >> 비진열 포함

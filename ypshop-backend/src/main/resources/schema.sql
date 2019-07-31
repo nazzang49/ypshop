@@ -110,6 +110,10 @@ ALTER TABLE `category`
 ALTER TABLE `delivery`
 	DROP PRIMARY KEY; -- 수령자 주소록 기본키
 
+-- 쿠키
+ALTER TABLE `TABLE`
+	DROP PRIMARY KEY; -- 쿠키 기본키
+
 -- 회원
 DROP TABLE IF EXISTS `member` RESTRICT;
 
@@ -151,6 +155,9 @@ DROP TABLE IF EXISTS `order_log` RESTRICT;
 
 -- 수령자 주소록
 DROP TABLE IF EXISTS `delivery` RESTRICT;
+
+-- 쿠키
+DROP TABLE IF EXISTS `TABLE` RESTRICT;
 
 -- 회원
 CREATE TABLE `member` (
@@ -245,11 +252,15 @@ ALTER TABLE `cart`
 
 -- 주문 상세
 CREATE TABLE `orders_detail` (
-	`no`              INT UNSIGNED NOT NULL COMMENT '번호', -- 번호
-	`orderNo`         INT UNSIGNED NOT NULL COMMENT '주문번호', -- 주문번호
-	`productOptionNo` INT UNSIGNED NOT NULL COMMENT '상품옵션번호', -- 상품옵션번호
-	`orderAmount`     INT UNSIGNED NOT NULL COMMENT '주문수량', -- 주문수량
-	`orderPrice`      INT UNSIGNED NOT NULL COMMENT '상품별 주문금액' -- 상품별 주문금액
+	`no`               INT UNSIGNED NOT NULL COMMENT '번호', -- 번호
+	`orderNo`          INT UNSIGNED NOT NULL COMMENT '주문번호', -- 주문번호
+	`productOptionNo`  INT UNSIGNED NULL     COMMENT '상품옵션번호', -- 상품옵션번호
+	`productName`      VARCHAR(50)  NOT NULL COMMENT '상품명', -- 상품명
+	`firstOptionName`  VARCHAR(50)  NOT NULL COMMENT '1차 옵션명', -- 1차 옵션명
+	`secondOptionName` VARCHAR(50)  NOT NULL COMMENT '2차 옵션명', -- 2차 옵션명
+	`imageUrl`         VARCHAR(100) NOT NULL COMMENT '썸네일', -- 썸네일
+	`orderAmount`      INT UNSIGNED NOT NULL COMMENT '주문수량', -- 주문수량
+	`orderPrice`       INT UNSIGNED NOT NULL COMMENT '상품별 주문금액' -- 상품별 주문금액
 )
 COMMENT '주문 상세';
 
@@ -289,7 +300,7 @@ CREATE TABLE `product_option` (
 	`firstOptionNo`   INT UNSIGNED NOT NULL COMMENT '1차 옵션', -- 1차 옵션
 	`secondOptionNo`  INT UNSIGNED NOT NULL COMMENT '2차 옵션', -- 2차 옵션
 	`remainAmount`    INT UNSIGNED NOT NULL COMMENT '재고 수량(-1이면 비재고)', -- 재고 수량(-1이면 비재고)
-	`availableAmount` INT UNSIGNED NOT NULL COMMENT '판매 가능 수량(-이면 비재고)' -- 판매 가능 수량(-이면 비재고)
+	`availableAmount` INT UNSIGNED NOT NULL COMMENT '판매 가능 수량(-1이면 비재고)' -- 판매 가능 수량(-1이면 비재고)
 )
 COMMENT '상품옵션';
 
@@ -417,6 +428,20 @@ ALTER TABLE `delivery`
 			`no` -- 번호
 		);
 
+-- 쿠키
+CREATE TABLE `TABLE` (
+	`COL`  <데이터 타입 없음> NOT NULL COMMENT '쿠키', -- 쿠키
+	`COL2` <데이터 타입 없음> NULL     COMMENT '새 컬럼' -- 새 컬럼
+)
+COMMENT '쿠키';
+
+-- 쿠키
+ALTER TABLE `TABLE`
+	ADD CONSTRAINT `PK_TABLE` -- 쿠키 기본키
+		PRIMARY KEY (
+			`COL` -- 쿠키
+		);
+
 -- 주문
 ALTER TABLE `orders`
 	ADD CONSTRAINT `FK_member_TO_orders` -- 회원 -> 주문
@@ -480,7 +505,7 @@ ALTER TABLE `orders_detail`
 		REFERENCES `product_option` ( -- 상품옵션
 			`no` -- 번호
 		)
-		ON DELETE CASCADE;
+		ON DELETE SET NULL;
 
 -- 옵션
 ALTER TABLE `option`

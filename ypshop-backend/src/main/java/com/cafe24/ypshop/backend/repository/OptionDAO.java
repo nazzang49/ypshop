@@ -1,13 +1,12 @@
 package com.cafe24.ypshop.backend.repository;
 
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.OptionVO;
-import com.cafe24.ypshop.backend.vo.ProductVO;
 
 @Repository
 public class OptionDAO {
@@ -30,14 +29,11 @@ public class OptionDAO {
 		return sqlSession.selectList("option.selectAllOptionByProductNo", productNo);
 	}
 	
-	//(회원) 주문 상품별 1차 옵션 정보
-	public OptionVO selectFirstByProductOptionNo(Long productOptionNO) {
-		return sqlSession.selectOne("order.selectFirstByProductOptionNo", productOptionNO);
+	//(관리자) 옵션 중복 체크
+	public OptionVO checkExist(Long productNo, String optionName) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("optionName", optionName);
+		map.put("productNo", productNo);
+		return sqlSession.selectOne("option.checkExist", map); 
 	}
-	
-	//(회원) 주문 상품별 2차 옵션 정보
-	public OptionVO selectSecondByProductOptionNo(Long productOptionNO) {
-		return sqlSession.selectOne("order.selectSecondByProductOptionNo", productOptionNO);
-	}
-	
 }

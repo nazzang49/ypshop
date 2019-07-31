@@ -48,7 +48,6 @@ public class AdminOrderController {
 		
 		//관리자 인증
 		
-		
 		List<OrderVO> orderList = adminOrderService.주문목록();
 		
 		//리턴 데이터
@@ -60,12 +59,10 @@ public class AdminOrderController {
 	
 	@ApiOperation(value="주문 상태 수정")
 	@PutMapping(value="/update/{no}")
-	public ResponseEntity<JSONResult> udpate(@ModelAttribute OrderVO orderVO,
-							 				 BindingResult br) {
+	public ResponseEntity<JSONResult> udpate(@ModelAttribute OrderVO orderVO) {
 		
 		//관리자 인증
-		
-		
+				
 		//valid
 		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 		Set<ConstraintViolation<OrderVO>> validatorResults = validator.validateProperty(orderVO, "status");

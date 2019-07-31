@@ -51,11 +51,6 @@ public class MemberControllerTest {
 	@Autowired
 	private FilterChainProxy springSecurityFilterChain;
 	
-	@BeforeClass
-	public static void setDB() {
-	
-	}
-	
 	@Before
 	public void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
@@ -66,7 +61,7 @@ public class MemberControllerTest {
 	
 	//아이디 중복 체크
 	@Test
-	public void testBMemberCheckId() throws Exception {
+	public void _testMemberCheckId() throws Exception {
 		//중복 O
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/member/checkid")
@@ -410,11 +405,6 @@ public class MemberControllerTest {
 		String resultString = resultActions.andReturn().getResponse().getContentAsString();
 		JacksonJsonParser jsonParser = new JacksonJsonParser();
 		return jsonParser.parseMap(resultString).get("access_token").toString();
-	}
-	
-	@AfterClass
-	public static void resetDB() {
-		
 	}
 	
 }

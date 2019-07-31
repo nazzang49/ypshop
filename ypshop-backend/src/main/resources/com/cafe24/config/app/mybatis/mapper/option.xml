@@ -3,6 +3,16 @@
 
 <mapper namespace="option">
 
+	<!-- 옵션 중복 체크 -->
+	<select id="checkExist" parameterType="map" resultType="optionvo">
+	<![CDATA[
+		select *
+		from option
+		where name=#{optionName}
+		and productNo=#{productNo}
+	]]>
+	</select>
+
 	<!-- 옵션 추가 -->
 	<insert id="insert" parameterType="optionvo">
 	<![CDATA[

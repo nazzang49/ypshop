@@ -120,35 +120,25 @@
 			where id like concat('%',#{searchKwd},'%')
 		]]>
 		</if>
-		<!-- 암호화 컬럼 검색 가능 -->
 		<if test="searchType=='name'">
 		<![CDATA[
-			where name like concat('%',#{searchKwd},'%')
+			where cast(aes_decrypt(name, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
 		]]>
 		</if>
 		<if test="searchType=='email'">
 		<![CDATA[
-			where email like concat('%',#{searchKwd},'%')
+			where cast(aes_decrypt(email, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
 		]]>
 		</if>
 		<if test="searchType=='address'">
 		<![CDATA[
-			where address like concat('%',#{searchKwd},'%')
+			where cast(aes_decrypt(address, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
 		]]>
 		</if>
 	<![CDATA[
 		order by regDate desc
 	]]>
 	</select>
-	
-	<!-- (관리자) 회원삭제 = 강제탈퇴 -->
-	<delete id="deleteByAdmin" parameterType="string">
-	<![CDATA[
-		delete
-		from member
-		where id=#{id}
-	]]>
-	</delete>
 	
 	<!-- (관리자) 회원 주문 목록 -->
 	<select id="selectOrderBySearch" parameterType="map" resultType="ordervo">
@@ -165,9 +155,18 @@
 		<!-- 암호화 컬럼 검색 가능 -->
 		<if test="searchType=='name'">
 		<![CDATA[
-			and memberName like concat('%',#{searchKwd},'%')
+			and cast(aes_decrypt(m.name, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
 		]]>
 		</if>
 	</select>
+	
+	<!-- (관리자) 회원삭제 = 강제탈퇴 -->
+	<delete id="deleteByAdmin" parameterType="string">
+	<![CDATA[
+		delete
+		from member
+		where id=#{id}
+	]]>
+	</delete>
 	
 </mapper>

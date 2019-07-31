@@ -223,21 +223,20 @@ public class AdminProductController {
 		
 		//valid by JS
 		
-		boolean flag = adminImageService.이미지추가(imageUrlList, productNo);
+		String returnMsg = adminImageService.이미지추가(imageUrlList, productNo);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
-		data.put("flag", flag);
+		data.put("returnMsg", returnMsg);
 		JSONResult result = JSONResult.success(data);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	
 	@ApiOperation(value="이미지 삭제")
 	@DeleteMapping(value="/image/delete")
-	public JSONResult imageDelete(@RequestParam(value="no", required=true) List<Long> imageNoList) {
+	public ResponseEntity<JSONResult> imageDelete(@RequestParam(value="no", required=true) List<Long> imageNoList) {
 		
 		//관리자 인증
-		
 		
 		boolean flag = adminImageService.이미지삭제(imageNoList);
 		
@@ -245,7 +244,7 @@ public class AdminProductController {
 		Map<String, Object> data = new HashMap<>();
 		data.put("flag", flag);
 		JSONResult result = JSONResult.success(data);
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	
 	@ApiOperation(value="옵션 목록")
@@ -265,29 +264,19 @@ public class AdminProductController {
 	
 	@ApiOperation(value="옵션 추가")
 	@PostMapping(value="/{productNo}/option/add")
-	public ResponseEntity<JSONResult> OptionAdd(@RequestBody @Valid List<OptionVO> optionVOList,
-												BindingResult br) {
+	public ResponseEntity<JSONResult> OptionAdd(@RequestParam(value="name", required=true) List<String> optionNameList,
+												@RequestParam(value="depth", required=true) List<Long> optionDepthList,
+												@PathVariable(value="productNo") Long productNo) {
 		
 		//관리자 인증
 		
-		customCollectionValidator.validate(optionVOList, br);
-		
-		if(br.hasErrors()) {
-			List<ObjectError> errorList = br.getAllErrors();
-			for(ObjectError error : errorList) {
-				String msg = error.getDefaultMessage();
-				JSONResult result = JSONResult.fail(msg);
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);	
-			}
-		}
-		
 		//valid by JS
 		
-//		boolean flag = adminOptionService.옵션추가(optionNameList, optionDepthList, productNo);
+		String returnMsg = adminOptionService.옵션추가(optionNameList, optionDepthList, productNo);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
-//		data.put("flag", flag);
+		data.put("returnMsg", returnMsg);
 		JSONResult result = JSONResult.success(data);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
@@ -295,7 +284,7 @@ public class AdminProductController {
 	//옵션 삭제
 	@ApiOperation(value="옵션 삭제")
 	@DeleteMapping(value="/option/delete")
-	public JSONResult optionDelete(@RequestParam(value="no", required=true) List<Long> optionNoList) {
+	public JSONResult optionDelete(@RequestParam(value="no", required=true, defaultValue="0") List<Long> optionNoList) {
 		
 		//관리자 인증
 		
@@ -311,9 +300,9 @@ public class AdminProductController {
 	//상품옵션 추가
 	@ApiOperation(value="상품옵션 추가")
 	@PostMapping(value="/{productNo}/productOption/add")
-	public ResponseEntity<JSONResult> productOptionAdd(@RequestParam(value="firstOptionNo", required=true) List<Long> firstOptionNoList,
-													   @RequestParam(value="secondOptionNo", required=true) List<Long> secondOptionNoList,
-													   @RequestParam(value="remainAmount", required=true) List<Long> remainAmountList,
+	public ResponseEntity<JSONResult> productOptionAdd(@RequestParam(value="firstOptionNo", required=true, defaultValue="0") List<Long> firstOptionNoList,
+													   @RequestParam(value="secondOptionNo", required=true, defaultValue="0") List<Long> secondOptionNoList,
+													   @RequestParam(value="remainAmount", required=true, defaultValue="0") List<Long> remainAmountList,
 											   		   @PathVariable(value="productNo") Long productNo) {
 
 		//관리자 인증
@@ -332,7 +321,7 @@ public class AdminProductController {
 	//상품옵션 삭제
 	@ApiOperation(value="상품옵션 삭제")
 	@DeleteMapping(value="/productOption/delete")
-	public JSONResult productOptionDelete(@RequestParam(value="no", required=true) List<Long> productOptionNoList) {
+	public JSONResult productOptionDelete(@RequestParam(value="no", required=true, defaultValue="0") List<Long> productOptionNoList) {
 		
 		//관리자 인증
 		

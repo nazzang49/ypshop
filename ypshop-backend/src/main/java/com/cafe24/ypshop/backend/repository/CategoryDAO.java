@@ -11,9 +11,7 @@ public class CategoryDAO {
 
 	@Autowired
 	private SqlSession sqlSession;
-	
-	private final String keyValue = "shop-keyValue";
-	
+		
 	//카테고리 추가
 	public boolean insert(CategoryVO categoryVO) {
 		categoryVO.setNo(1L);
@@ -33,6 +31,11 @@ public class CategoryDAO {
 	//카테고리 삭제
 	public boolean delete(Long no) {
 		return sqlSession.delete("category.delete", no)==1;
+	}
+	
+	//카테고리 중복 체크
+	public CategoryVO checkExist(CategoryVO categoryVO) {
+		return sqlSession.selectOne("category.checkExist", categoryVO);
 	}
 
 }

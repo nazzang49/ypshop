@@ -1,6 +1,8 @@
 package com.cafe24.ypshop.backend.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,14 @@ public class ImageDAO {
 
 	@Autowired
 	private SqlSession sqlSession;
+	
+	//(관리자) 이미지 중복 체크
+	public ImageVO checkExist(Long productNo, String imageUrl) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("imageUrl", imageUrl);
+		map.put("productNo", productNo);
+		return sqlSession.selectOne("image.checkExist", map); 
+	}
 	
 	//(관리자) 이미지 추가
 	public boolean insert(ImageVO imageVO) {

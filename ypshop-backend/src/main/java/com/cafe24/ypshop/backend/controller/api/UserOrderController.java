@@ -109,7 +109,7 @@ public class UserOrderController {
 	
 	@ApiOperation(value="장바구니 삭제")
 	@DeleteMapping(value="/cart/delete")
-	public JSONResult cartDelete(@RequestParam(value="no", required=true) List<Long> cartNoList) {
+	public JSONResult cartDelete(@RequestParam(value="no", required=true, defaultValue="0") List<Long> cartNoList) {
 		
 		//본인 인증
 		
@@ -133,11 +133,10 @@ public class UserOrderController {
 			List<ObjectError> errorList = br.getAllErrors();
 			for(ObjectError error : errorList) {
 				String msg = error.getDefaultMessage();
-				System.out.println("들어온다 : "+msg);
 				JSONResult result = JSONResult.fail(msg);
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 			}
-		}		
+		}
 		
 		boolean flag = userOrderService.주문추가(orderVO);
 		

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cafe24.ypshop.backend.repository.OptionDAO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.OptionVO;
@@ -21,21 +23,31 @@ public class AdminOptionService {
 	}
 	
 	//옵션 추가
-	public boolean 옵션추가(List<String> optionNameList, List<Long> optionDepthList, Long productNo) {
-		boolean flag = true;
+	public String 옵션추가(List<String> optionNameList, List<Long> optionDepthList, Long productNo) {
+		StringBuilder returnMsg = new StringBuilder();
 		for(int i=0;i<optionNameList.size();i++) {
-			flag = optionDao.insert(new OptionVO(productNo, optionNameList.get(i), optionDepthList.get(i)));
+			String optionName = optionNameList.get(i);
+			//중복 X >> 추가 성공 >> 성공 메시지
+			if(optionDao.checkExist(productNo, optionName)==null) optionDao.insert(new OptionVO(productNo, optionNameList.get(i), optionDepthList.get(i)));
+			//중복 O >> 추가 실패 >> 실패 메시지
+			else {
+				returnMsg.append((i+1)+"번 ");
+				continue;
+			}
 		}
-		return flag;
+		if(returnMsg.toString().contains("번")) {
+			return returnMsg.append("옵션 추가 실패 >> 중복").toString();
+		}
+		return returnMsg.append("옵션 추가 성공").toString();
 	}
 	
 	//옵션 삭제
+	@Transactional
 	public boolean 옵션삭제(List<Long> optionDepthList) {
-		boolean flag = true;
 		for(Long no : optionDepthList) {
-			flag = optionDao.delete(no);
+			optionDao.delete(no);
 		}
-		return flag;
+		return true;
 	}
 	
 }

@@ -12,7 +12,7 @@
 		#{memberId},
 		#{productOptionNo},
 		#{cartAmount},
-		#{productPrice})
+		#{cartPrice})
 	]]>
 	</insert>
 	
@@ -44,7 +44,7 @@
 	]]>
 	</delete>
 	
-	<!-- 장바구니 조회 -->
+	<!-- 장바구니 >> 주문 -->
 	<select id="selectByNo" parameterType="long" resultType="cartvo">
 	<![CDATA[
 		select *

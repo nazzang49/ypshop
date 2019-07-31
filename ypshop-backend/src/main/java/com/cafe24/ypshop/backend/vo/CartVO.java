@@ -12,8 +12,8 @@ public class CartVO {
 	private Long productOptionNo;
 	//상품별 수량 제한 >> 최소 1개, 최대 10개
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(value=1, message="최소 수량 1개")
+	@Max(value=10, message="최대 수량 10개")
 	private Long cartAmount;
 	//상품 가격
 	private Long cartPrice;

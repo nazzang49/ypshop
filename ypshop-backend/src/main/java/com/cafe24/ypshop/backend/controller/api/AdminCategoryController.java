@@ -68,6 +68,22 @@ public class AdminCategoryController {
 		return result;
 	}
 	
+	@ApiOperation(value="카테고리 중복 체크")
+	@GetMapping(value="/checkexist")
+	public JSONResult checkExist(@ModelAttribute CategoryVO categoryVO) {
+		
+		//관리자 인증
+		
+		//valid
+		
+		boolean flag = adminCategoryService.카테고리중복체크(categoryVO);
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("flag", flag);
+		JSONResult result = JSONResult.success(data);
+		return result;
+	}
+	
 	@ApiOperation(value="카테고리 추가")
 	@PostMapping(value="/add")
 	public ResponseEntity<JSONResult> add(@ModelAttribute @Valid CategoryVO categoryVO,

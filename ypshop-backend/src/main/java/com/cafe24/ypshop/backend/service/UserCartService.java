@@ -3,7 +3,9 @@ package com.cafe24.ypshop.backend.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cafe24.ypshop.backend.repository.CartDAO;
 import com.cafe24.ypshop.backend.vo.CartVO;
@@ -30,13 +32,10 @@ public class UserCartService {
 	}
 	
 	//장바구니 삭제
+	@Transactional
 	public boolean 장바구니삭제(List<Long> cartNoList) {
-		boolean flag = true;
-		
-		for(Long no : cartNoList) {
-			flag = cartDao.delete(no);
-		}
-		return flag;
+		for(Long no : cartNoList) cartDao.delete(no);
+		return true;
 	}
 	
 }

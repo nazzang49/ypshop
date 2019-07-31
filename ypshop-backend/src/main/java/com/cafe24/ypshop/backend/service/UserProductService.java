@@ -36,7 +36,6 @@ public class UserProductService {
 	//상품 상세 >> 기본 정보, 이미지, 옵션
 	@Transactional
 	public Map<String, Object> 상품상세(ProductVO prodcutVO) {
-		
 		//기본 정보
 		ProductVO pvo = productDao.selectProductDetailByNo(prodcutVO);
 		//상품별 이미지

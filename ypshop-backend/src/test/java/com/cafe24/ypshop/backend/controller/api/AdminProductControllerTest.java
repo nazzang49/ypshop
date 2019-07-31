@@ -1,6 +1,7 @@
 package com.cafe24.ypshop.backend.controller.api;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.common.util.JacksonJsonParser;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -27,6 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import com.cafe24.ypshop.backend.config.AppConfig;
 import com.cafe24.ypshop.backend.config.TestWebConfig;
@@ -49,22 +54,26 @@ public class AdminProductControllerTest {
 	@Autowired
 	private WebApplicationContext webApplicationContext;
 	
-	@BeforeClass
-	public static void setDB() {
-		
-	}
+	@Autowired
+	private FilterChainProxy springSecurityFilterChain;
 	
 	@Before
 	public void setup() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+				.addFilter(springSecurityFilterChain)
+				.build();
 	}
 	
 	//상품 목록
 	@Test
 	public void testBProductListRead() throws Exception {
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
 		//카테고리 >> 진열번호 desc
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/admin/product/list/{categoryNo}",1L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/admin/product/list/{categoryNo}",1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -74,7 +83,9 @@ public class AdminProductControllerTest {
 		
 		//전체 >> 상품번호 desc
 		resultActions = 
-				mockMvc.perform(get("/api/admin/product/list").contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/admin/product/list")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -86,6 +97,7 @@ public class AdminProductControllerTest {
 	//상품 추가
 	@Test
 	public void testAProductWrite() throws Exception {
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
 		ProductVO productVO = new ProductVO();
 		productVO.setName("product6");
@@ -108,7 +120,9 @@ public class AdminProductControllerTest {
 		
 		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(post("/api/admin/product/add").contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
+				mockMvc.perform(post("/api/admin/product/add")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -119,7 +133,9 @@ public class AdminProductControllerTest {
 		productVO.setCategoryNo(8L);
 		
 		resultActions = 
-				mockMvc.perform(post("/api/admin/product/add").contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
+				mockMvc.perform(post("/api/admin/product/add")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
 
 		resultActions
 		.andExpect(status().isInternalServerError()).andDo(print())
@@ -129,7 +145,9 @@ public class AdminProductControllerTest {
 		productVO.setName(null);
 		
 		resultActions = 
-				mockMvc.perform(post("/api/admin/product/add").contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
+				mockMvc.perform(post("/api/admin/product/add")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
 
 		resultActions
 		.andExpect(status().isBadRequest()).andDo(print())
@@ -140,7 +158,9 @@ public class AdminProductControllerTest {
 		productVO.setPrice(null);
 		
 		resultActions = 
-				mockMvc.perform(post("/api/admin/product/add").contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
+				mockMvc.perform(post("/api/admin/product/add")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
 
 		resultActions
 		.andExpect(status().isBadRequest()).andDo(print())
@@ -152,7 +172,9 @@ public class AdminProductControllerTest {
 		productVO.setShortDescription(null);
 		
 		resultActions = 
-				mockMvc.perform(post("/api/admin/product/add").contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
+				mockMvc.perform(post("/api/admin/product/add")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(productVO)));
 
 		resultActions
 		.andExpect(status().isBadRequest()).andDo(print())
@@ -162,9 +184,12 @@ public class AdminProductControllerTest {
 	//상품 수정
 	@Test
 	public void testCProductUpdate() throws Exception {
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
 		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(put("/api/admin/product/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("name", "product1-update")
 						.param("categoryNo", "2")
 						.param("shortDescription", "설명1-update")
@@ -180,6 +205,7 @@ public class AdminProductControllerTest {
 		//2. fail >> invalidation in not null of categoryNo
 		resultActions = 
 				mockMvc.perform(put("/api/admin/product/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("name", "product1-update")
 						.param("shortDescription", "설명1-update")
 						.param("price", "30000")
@@ -193,6 +219,7 @@ public class AdminProductControllerTest {
 		//2. fail >> invalidation in not null of price
 		resultActions = 
 				mockMvc.perform(put("/api/admin/product/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("name", "product1-update")
 						.param("categoryNo", "2")
 						.param("shortDescription", "설명1-update")
@@ -206,6 +233,7 @@ public class AdminProductControllerTest {
 		//2. fail >> invalidation in dataType of price
 		resultActions = 
 				mockMvc.perform(put("/api/admin/product/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("name", "product1-update")
 						.param("categoryNo", "2")
 						.param("shortDescription", "설명1-update")
@@ -220,6 +248,7 @@ public class AdminProductControllerTest {
 		//2. fail >> invalidation in not empty of alignUse
 		resultActions = 
 				mockMvc.perform(put("/api/admin/product/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("name", "product1-update")
 						.param("categoryNo", "2")
 						.param("shortDescription", "설명1-update")
@@ -231,12 +260,15 @@ public class AdminProductControllerTest {
 		.andExpect(jsonPath("$.result", is("fail")));
 	}
 	
-	//상품 삭제 >> cascade
+	//상품 삭제 >> 주문상세 set null, 그 외 cascade
 	@Test
 	public void testDProductDelete() throws Exception {
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
 		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(delete("/api/admin/product/delete/{no}",3L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("categoryNo", "3")
 						.param("alignNo", "3")
 						.contentType(MediaType.APPLICATION_JSON));
@@ -245,149 +277,295 @@ public class AdminProductControllerTest {
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//2. fail >> invalidation in not null of categoryNo
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/delete/{no}",3L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("alignNo", "3")
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 	}
 	
-	//이미지 추가 >> 리스트
+	//이미지 추가
 	@Test
 	public void testEImageWrite() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 4L)
-						.param("url", "image1")
-						.param("url", "image2")
-						.param("url", "image3")
+				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("url", "image11")
+						.param("url", "image12")
+						.param("url", "image13")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
+		.andExpect(jsonPath("$.data.returnMsg", is("이미지 추가 성공")));
 		
-		//invalidation in repOrBasic = 이미지구분 입력값 실패 케이스
+		//2. fail >> duplication
 		resultActions = 
-				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 4L)
+				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("url", "image1")
+						.param("url", "image6")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
-		.andExpect(status().isBadRequest()).andDo(print())
-		.andExpect(jsonPath("$.result", is("fail"))) ;
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.returnMsg", is("1번 2번 이미지 추가 실패 >> 중복")));
+		
 	}
 	
 	//이미지 목록
 	@Test
 	public void testIImageListRead() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/admin/product/{productNo}/image/list", 4L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/admin/product/{productNo}/image/list", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.imageList[0].url", is("image3")))
-		.andExpect(jsonPath("$.data.imageList[1].url", is("image2")))
-		.andExpect(jsonPath("$.data.imageList[2].url", is("image1")));
+		.andExpect(jsonPath("$.data.imageList[0].url", is("image6")))
+		.andExpect(jsonPath("$.data.imageList[0].repOrBasic", is("B")))
+		.andExpect(jsonPath("$.data.imageList[1].url", is("image1")))
+		.andExpect(jsonPath("$.data.imageList[1].repOrBasic", is("R")));
+		
+		//2. fail >> invalidation in dataType of productNo
+		resultActions = 
+				mockMvc.perform(get("/api/admin/product/{productNo}/image/list", "test")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
 	}
 	
 	//이미지 삭제
 	@Test
 	public void testFImageDelete() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(delete("/api/admin/product/image/delete",9L)
-						.param("no", "11")
-						.param("no", "12")
+				mockMvc.perform(delete("/api/admin/product/image/delete",1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("no", "1")
+						.param("no", "6")
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//2. fail >> invalidation in not null of no
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/image/delete",1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print());
+		
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/image/delete",1L)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
 	}
 	
 	//옵션 목록
 	@Test
 	public void testJOptionListRead() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/admin/product/{productNo}/option/list", 10L).contentType(MediaType.APPLICATION_JSON));
+				mockMvc.perform(get("/api/admin/product/{productNo}/option/list", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.optionList[0].name", is("M")))
-		.andExpect(jsonPath("$.data.optionList[1].name", is("black")));
+		.andExpect(jsonPath("$.data.optionList[0].name", is("XL")))
+		.andExpect(jsonPath("$.data.optionList[1].name", is("L")))
+		.andExpect(jsonPath("$.data.optionList[2].name", is("black")));
+		
+		//2. fail >> invalidation in dataType of productNo
+		resultActions = 
+				mockMvc.perform(get("/api/admin/product/{productNo}/option/list", "test")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 	}
 	
 	//옵션 추가
 	@Test
 	public void testGOptionWrite() throws Exception {
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
-		List<OptionVO> optionVOList = new ArrayList<>();
-		OptionVO optionVO1 = new OptionVO();
-		optionVO1.setName("pink");
-		optionVO1.setDepth(1L);
-		
-		OptionVO optionVO2 = new OptionVO();
-		optionVO2.setName("275");
-		optionVO2.setDepth(2L);
-		
-		optionVOList.add(optionVO1);
-		optionVOList.add(optionVO2);
-		
-		//test >> api
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 1L)
-//						.param("name", "pink")
-//						.param("depth", "1")
-//						.param("name", "275")
-//						.param("depth", "2")
-						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(optionVOList)));
+						.header("Authorization", "Bearer " + accessToken)
+						.param("name", "pink")
+						.param("depth", "1")
+						.param("name", "XXL")
+						.param("depth", "2")
+						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
+		.andExpect(jsonPath("$.data.returnMsg", is("옵션 추가 성공")));
+		
+		//2. fail >> invalidation in dataType of depth
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("name", "pink")
+						.param("depth", "test")
+						.param("name", "XXL")
+						.param("depth", "2")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> duplication
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("name", "black")
+						.param("depth", "1")
+						.param("name", "L")
+						.param("depth", "2")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.returnMsg", is("1번 2번 옵션 추가 실패 >> 중복")));
+		
+		//2. fail >> invalidation in dataType of productNo
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", "test")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("name", "pink")
+						.param("depth", "1")
+						.param("name", "XXL")
+						.param("depth", "2")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in not null of depth
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/option/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("name", "pink")
+						.param("name", "XXL")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print());
 		
 	}
 	
 	//옵션 삭제
 	@Test
 	public void testHOptionDelete() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(delete("/api/admin/product/option/delete")
-						.param("no", "7")
-						.param("no", "8")
-						.param("no", "9")
-						.param("no", "10")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("no", "1")
+						.param("no", "2")
+						.param("no", "3")
+						.param("no", "4")
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//1. success without deletion
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/option/delete")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")))
+		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//2. fail >> invalidation in dataType of no
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/option/delete")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("no", "test")
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/option/delete")
+						.param("no", "7")
+						.param("no", "8")
+						.param("no", "9")
+						.param("no", "10")
+						.contentType(MediaType.APPLICATION_JSON));
+		
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
 	}
-	
-	
-	/*
-	 * 상품옵션 >> 상품 상세 페이지에 노출될 실제 각 상품들의 옵션 및 재고 정보
-	 */
-	
-	
 	
 	//상품옵션 추가
 	@Test
 	public void testKProductOptionWrite() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/admin/product/{productNo}/productOption/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
 						.param("firstOptionNo", "1")
-						.param("firstOptionNo", "2")
-						.param("secondOptionNo", "3")
-						.param("secondOptionNo", "4")
-						.param("remainAmount", "1000")
-						.param("remainAmount", "2000")
+						.param("firstOptionNo", "1")
+						.param("secondOptionNo", "6")
+						.param("secondOptionNo", "7")
+						.param("remainAmount", "300")
+						.param("remainAmount", "300")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -395,14 +573,57 @@ public class AdminProductControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
+		//2. fail >> data integrity violation exception 500
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/productOption/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isInternalServerError()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> invalidation in dataType of productNo
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/productOption/add", "test")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("firstOptionNo", "1")
+						.param("firstOptionNo", "1")
+						.param("secondOptionNo", "6")
+						.param("secondOptionNo", "7")
+						.param("remainAmount", "300")
+						.param("remainAmount", "300")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/productOption/add", 1L)
+						.param("firstOptionNo", "1")
+						.param("firstOptionNo", "1")
+						.param("secondOptionNo", "6")
+						.param("secondOptionNo", "7")
+						.param("remainAmount", "300")
+						.param("remainAmount", "300")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
+		
 	}
 	
 	//상품옵션 삭제
 	@Test
 	public void testLProductOptionDelete() throws Exception {
-		//test >> api
+		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
+		
+		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(delete("/api/admin/product/productOption/delete")
+						.header("Authorization", "Bearer " + accessToken)
 						.param("no", "1")
 						.param("no", "2")
 						.contentType(MediaType.APPLICATION_JSON));
@@ -411,11 +632,61 @@ public class AdminProductControllerTest {
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
+		
+		//1. success without deletion
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/productOption/delete")
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isOk()).andDo(print())
+		.andExpect(jsonPath("$.result", is("success")));
+		
+		//2. fail >> invalidation of dataType of no
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/productOption/delete")
+						.header("Authorization", "Bearer " + accessToken)
+						.param("no", "test")
+						.param("no", "2")
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
+		
+		//2. fail >> unauthorization
+		resultActions = 
+				mockMvc.perform(delete("/api/admin/product/productOption/delete")
+						.param("no", "1")
+						.param("no", "2")
+						.contentType(MediaType.APPLICATION_JSON));
+	
+		resultActions
+		.andExpect(status().isUnauthorized()).andDo(print());
 	}
 	
-	@AfterClass
-	public static void resetDB() {
+	//액세스 토큰 발급
+	private String obtainAccessToken(String username, String password, String role) throws Exception {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("grant_type", "password");
+		params.add("client_id", "ypshop");
+		params.add("username", username);
+		params.add("password", password);
+		params.add("scope", role);
 		
+		ResultActions resultActions = 
+			mockMvc
+				.perform(post("/oauth/token")
+				.params(params)
+				.with(httpBasic("ypshop", "1234"))
+				.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk());
+		
+		String resultString = resultActions.andReturn().getResponse().getContentAsString();
+		JacksonJsonParser jsonParser = new JacksonJsonParser();
+		return jsonParser.parseMap(resultString).get("access_token").toString();
 	}
 	
 }

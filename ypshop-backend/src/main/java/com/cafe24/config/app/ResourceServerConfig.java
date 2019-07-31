@@ -19,8 +19,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 			.antMatchers("/api/member/update").access("#oauth2.hasScope('USER')")
 			.antMatchers("/api/member/delete/**").access("#oauth2.hasScope('USER')")
 			.antMatchers("/api/member/info/**").access("#oauth2.hasScope('USER')")
-			//관리자_카테고리
-			.antMatchers("/api/category/info/**").access("#oauth2.hasScope('ADMIN')")
+			//관리자
+			.antMatchers("/api/admin/**").access("#oauth2.hasScope('ADMIN')")
 			.anyRequest()
 			.permitAll();
 		
