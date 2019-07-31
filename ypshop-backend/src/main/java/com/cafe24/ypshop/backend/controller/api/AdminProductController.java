@@ -116,39 +116,15 @@ public class AdminProductController {
 		
 		
 		//valid
-		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-		Set<ConstraintViolation<ProductVO>> validatorResults = validator.validateProperty(productVO, "name");
-		validatorResults.addAll(validator.validateProperty(productVO, "categoryNo"));
-		validatorResults.addAll(validator.validateProperty(productVO, "price"));
-		validatorResults.addAll(validator.validateProperty(productVO, "shortDescription"));
-		validatorResults.addAll(validator.validateProperty(productVO, "alignUse"));
-		
-		if(!validatorResults.isEmpty()) {
-			String msg = "";
-			for(ConstraintViolation<ProductVO> validatorResult : validatorResults) {
-				if("name".equals(validatorResult.getPropertyPath().toString())) {
-					msg = messageSource.getMessage("NotEmpty.productVO.name", null, LocaleContextHolder.getLocale());
-					break;
-				}else if("price".equals(validatorResult.getPropertyPath().toString())) {
-					msg = messageSource.getMessage("NotNull.productVO.price", null, LocaleContextHolder.getLocale());
-					break;
-				}else if("shortDescription".equals(validatorResult.getPropertyPath().toString())) {
-					msg = messageSource.getMessage("NotEmpty.productVO.shortDescription", null, LocaleContextHolder.getLocale());
-					break;
-				}else if("alignUse".equals(validatorResult.getPropertyPath().toString())) {
-					msg = messageSource.getMessage("NotEmpty.productVO.alignUse", null, LocaleContextHolder.getLocale());
-					break;
-				}else {
-					msg = messageSource.getMessage("NotNull.productVO.categoryNo", null, LocaleContextHolder.getLocale());
-					break;
-				}
-				
+		if(br.hasErrors()) {
+			List<ObjectError> errorList = br.getAllErrors();
+			for(ObjectError error : errorList) {
+				String msg = error.getDefaultMessage();
+				JSONResult result = JSONResult.fail(msg);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);	
 			}
-			JSONResult result = JSONResult.fail(msg);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
 		}
 		
-	
 		boolean flag = adminProductService.상품수정(productVO);
 	
 		//리턴 데이터
