@@ -77,13 +77,13 @@ public class AdminOrderControllerTest {
 		//주문1
 		.andExpect(jsonPath("$.data.orderList[0].no", is(1)))
 		.andExpect(jsonPath("$.data.orderList[0].memberId", is("user2")))
-		.andExpect(jsonPath("$.data.orderList[0].orderDate", is("2019-07-30")))
+		.andExpect(jsonPath("$.data.orderList[0].orderDate", is("2019-07-31")))
 		.andExpect(jsonPath("$.data.orderList[0].paymentPrice", is(400000)))
 		.andExpect(jsonPath("$.data.orderList[0].status", is("주문 확인")))
 		//주문2
 		.andExpect(jsonPath("$.data.orderList[1].no", is(2)))
 		.andExpect(jsonPath("$.data.orderList[1].memberId", is("user2")))
-		.andExpect(jsonPath("$.data.orderList[1].orderDate", is("2019-07-30")))
+		.andExpect(jsonPath("$.data.orderList[1].orderDate", is("2019-07-31")))
 		.andExpect(jsonPath("$.data.orderList[1].paymentPrice", is(220000)))
 		.andExpect(jsonPath("$.data.orderList[1].status", is("주문 확인")));
 		
@@ -121,7 +121,18 @@ public class AdminOrderControllerTest {
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
-		.andExpect(status().isUnauthorized()).andDo(print());		
+		.andExpect(status().isUnauthorized()).andDo(print());
+		
+		//2. fail >> enum condition
+		resultActions = 
+				mockMvc.perform(put("/api/admin/order/update/{no}",1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.param("status", "ENUM 타입 위반")
+						.contentType(MediaType.APPLICATION_JSON));
+
+		resultActions
+		.andExpect(status().isInternalServerError()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 		
 	}
 	
