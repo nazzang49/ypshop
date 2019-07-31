@@ -128,7 +128,7 @@ public class AdminUserControllerTest {
 		.andExpect(jsonPath("$.result", is("success")))
 		.andExpect(jsonPath("$.data.flag", is(true)));
 		
-		//1. success with no deletion
+		//1. success without deletion
 		resultActions = 
 				mockMvc.perform(delete("/api/admin/user/delete")
 						.header("Authorization", "Bearer " + accessToken)
@@ -166,8 +166,18 @@ public class AdminUserControllerTest {
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
+		//주문 1
 		.andExpect(jsonPath("$.data.userOrderList[0].memberId", is("user2")))
-		.andExpect(jsonPath("$.data.userOrderList[1].memberId", is("user2")));
+		.andExpect(jsonPath("$.data.userOrderList[0].memberName", is("user2")))
+		.andExpect(jsonPath("$.data.userOrderList[0].paymentCategory", is("무통장")))
+		//주문 2
+		.andExpect(jsonPath("$.data.userOrderList[1].memberId", is("user2")))
+		.andExpect(jsonPath("$.data.userOrderList[1].memberName", is("user2")))
+		.andExpect(jsonPath("$.data.userOrderList[1].paymentCategory", is("계좌이체")))
+		//주문 3
+		.andExpect(jsonPath("$.data.userOrderList[2].memberId", is("user2")))
+		.andExpect(jsonPath("$.data.userOrderList[2].memberName", is("user2")))
+		.andExpect(jsonPath("$.data.userOrderList[2].paymentCategory", is("무통장")));
 		
 		//1. success without search
 		resultActions = 

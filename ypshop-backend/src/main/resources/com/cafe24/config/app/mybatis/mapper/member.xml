@@ -29,7 +29,7 @@
 	]]>
 	</insert>
 	
-	<!-- 로그인 >> 복호화 후, 문자열 캐스팅 -->
+	<!-- 로그인 -->
 	<select id="selectByIdAndPassword" parameterType="membervo" resultType="membervo">
 	<![CDATA[
 		select
@@ -62,7 +62,7 @@
 	]]>
 	</select>
 	
-	<!-- security user -->
+	<!-- security user (미사용) -->
 	<select id="selectSecurityUserById" parameterType="map" resultType="membervo">
 	<![CDATA[
 		select
@@ -143,7 +143,13 @@
 	<!-- (관리자) 회원 주문 목록 -->
 	<select id="selectOrderBySearch" parameterType="map" resultType="ordervo">
 	<![CDATA[
-		select o.orderDate, m.id as memberId, m.name as memberName, o.no, o.paymentCategory, o.paymentPrice
+		select
+		o.orderDate,
+		m.id as memberId,
+		cast(aes_decrypt(m.name, #{keyValue}) as char) as memberName,
+		o.no,
+		o.paymentCategory,
+		o.paymentPrice
 		from orders o, member m
 		where o.memberId=m.id
 	]]>
