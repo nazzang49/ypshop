@@ -55,7 +55,7 @@
 		select no, memberId, orderDate, paymentCategory, paymentPrice, status
 		from orders
 		where memberId=#{memberId}
-		and orderDate >= date_add(now(), interval #{period} month);
+		and orderDate >= date_add(now(), interval #{period} month)
 	]]>
 	</select>
 	

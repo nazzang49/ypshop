@@ -35,6 +35,8 @@ import com.cafe24.ypshop.backend.security.AuthUser;
 import com.cafe24.ypshop.backend.security.SecurityUser;
 import com.cafe24.ypshop.backend.service.AdminCategoryService;
 import com.cafe24.ypshop.backend.vo.CategoryVO;
+import com.google.common.base.Optional;
+
 import io.swagger.annotations.ApiOperation;
 
 //(관리자) 카테고리 컨트롤러
@@ -116,7 +118,7 @@ public class AdminCategoryController {
 		
 		//관리자 인증
 		
-		//valid >> 아이디, 비밀번호 2개 입력값 >> MemberVO에서 로그인 시 필요하지 않은 데이터 별도 처리 필요 or 에러 발생
+		//valid
 		Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 		Set<ConstraintViolation<CategoryVO>> validatorResults = validator.validateProperty(categoryVO, "name");
 		
@@ -141,23 +143,29 @@ public class AdminCategoryController {
 	//하위 카테고리 삭제 필요 -ing
 	@ApiOperation(value="카테고리 삭제")
 	@DeleteMapping(value="/delete/{no}")
-	public JSONResult delete(@PathVariable(value="no") Long no) {
+	public ResponseEntity<JSONResult> delete(@PathVariable(value="no") Optional<Long> no) {
 		
 		//관리자 인증
 		
-		boolean flag = adminCategoryService.카테고리삭제(no);
+		//fail >> no is null
+		if(!no.isPresent()) {
+			JSONResult result = JSONResult.fail("카테고리 번호 미입력");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+		}
 		
-		//fail
+		boolean flag = adminCategoryService.카테고리삭제(no.get());
+		
+		//fail >> delete error
 		if(!flag) {
 			JSONResult result = JSONResult.fail("카테고리 삭제 실패");
-			return result;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 		}
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
 		data.put("flag", flag);
 		JSONResult result = JSONResult.success(data);
-		return result;
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	
 }

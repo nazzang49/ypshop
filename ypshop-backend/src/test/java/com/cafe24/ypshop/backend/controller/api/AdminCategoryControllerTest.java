@@ -224,30 +224,29 @@ public class AdminCategoryControllerTest {
 	public void testDCategoryDelete() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
-		//1. success
+		//1. fail >> restriction on delete cascade
 		ResultActions resultActions = 
-				mockMvc.perform(delete("/api/admin/category/delete/{no}",7L)
+				mockMvc.perform(delete("/api/admin/category/delete/{no}",1L)
 						.header("Authorization", "Bearer " + accessToken)
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
-		.andExpect(status().isOk()).andDo(print())
-		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
+		.andExpect(status().isInternalServerError()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 		
-		//2. fail >> invalidation in type of no
+		//2. fail >> invalidation in dataType of no (Path Variable)
 		resultActions = 
 				mockMvc.perform(delete("/api/admin/category/delete/{no}", "test")
 						.header("Authorization", "Bearer " + accessToken)
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
-		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(status().isInternalServerError()).andDo(print())
 		.andExpect(jsonPath("$.result", is("fail")));
 		
-		//2. fail >> FK
+		//2. fail >> FK condition, out of range
 		resultActions = 
-				mockMvc.perform(delete("/api/admin/category/delete/{no}",1L)
+				mockMvc.perform(delete("/api/admin/category/delete/{no}",100L)
 						.header("Authorization", "Bearer " + accessToken)
 						.contentType(MediaType.APPLICATION_JSON));
 	
