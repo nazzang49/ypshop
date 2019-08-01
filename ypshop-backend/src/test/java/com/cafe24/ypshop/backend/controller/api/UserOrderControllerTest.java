@@ -135,8 +135,16 @@ public class UserOrderControllerTest {
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
+		//1번 장바구니
 		.andExpect(jsonPath("$.data.cartList[0].productOptionNo", is(1)))
-		.andExpect(jsonPath("$.data.cartList[1].productOptionNo", is(2)));
+		.andExpect(jsonPath("$.data.cartList[0].productName", is("product1")))
+		.andExpect(jsonPath("$.data.cartList[0].firstOptionName", is("black")))
+		.andExpect(jsonPath("$.data.cartList[0].secondOptionName", is("L")))
+		//2번 장바구니
+		.andExpect(jsonPath("$.data.cartList[1].productOptionNo", is(2)))
+		.andExpect(jsonPath("$.data.cartList[1].productName", is("product2")))
+		.andExpect(jsonPath("$.data.cartList[1].firstOptionName", is("white")))
+		.andExpect(jsonPath("$.data.cartList[1].secondOptionName", is("M")));
 		
 		//1. success with no results
 		resultActions = 

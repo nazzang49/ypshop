@@ -62,9 +62,6 @@ public class AdminProductController {
 	@Autowired
 	private AdminProductOptionService adminProductOptionService;
 	
-	@Autowired
-	private CustomCollectionValidator customCollectionValidator;
-	
 	@ApiOperation(value="상품 목록")
 	@GetMapping(value= {"/list", "/list/{categoryNo}"})
 	public JSONResult getProductList(@ModelAttribute ProductVO productVO) {

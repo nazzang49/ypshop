@@ -19,9 +19,16 @@
 	<!-- 장바구니 목록 -->
 	<select id="selectAllByMemberId" resultType="cartvo">
 	<![CDATA[
-		select *
-		from cart
-		where memberId=#{memberId}
+		select A.no, A.firstOptionName, o1.name as secondOptionName, A.productOptionNo, A.cartAmount, A.cartPrice, A.productName
+		from product_option po1, option o1,
+			(select c.no, c.cartAmount, c.cartPrice, c.productOptionNo, p.name as productName, o.name as firstOptionName
+			 from cart c, product p, product_option po, option o
+			 where memberId=#{memberId}
+			 and c.productOptionNo=po.no
+			 and po.firstOptionNo=o.no
+			 and po.productNo=p.no) A
+		where A.productOptionNo=po1.no
+		and po1.secondOptionNo=o1.no;
 	]]>
 	</select>
 	

@@ -132,8 +132,8 @@
   <!-- logback --> 
   <dependency>
 	<groupId>org.slf4j</groupId>                
-	<artifactId>jcl-over-slf4j</artifactId>     
-	<version>${jcloverslf4j.version}</version>  
+	<artifactId>jcl-over-slf4j</artifactId>
+	<version>${jcloverslf4j.version}</version>
   </dependency>
   
   <dependency>

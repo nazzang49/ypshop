@@ -18,11 +18,13 @@ public class CartVO {
 	//상품 가격
 	private Long cartPrice;
 	private Long orderNo;
+	//상품명
+	private String productName;
+	//1차 옵션명
+	private String firstOptionName;
+	//2차 옵션명
+	private String secondOptionName;
 		
-	public CartVO() {
-		
-	}
-	
 	public Long getOrderNo() {
 		return orderNo;
 	}
@@ -59,11 +61,30 @@ public class CartVO {
 	public void setCartPrice(Long cartPrice) {
 		this.cartPrice = cartPrice;
 	}
-	
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getFirstOptionName() {
+		return firstOptionName;
+	}
+	public void setFirstOptionName(String firstOptionName) {
+		this.firstOptionName = firstOptionName;
+	}
+	public String getSecondOptionName() {
+		return secondOptionName;
+	}
+	public void setSecondOptionName(String secondOptionName) {
+		this.secondOptionName = secondOptionName;
+	}
+
 	@Override
 	public String toString() {
 		return "CartVO [no=" + no + ", memberId=" + memberId + ", productOptionNo=" + productOptionNo + ", cartAmount="
-				+ cartAmount + ", cartPrice=" + cartPrice + ", orderNo=" + orderNo + "]";
+				+ cartAmount + ", cartPrice=" + cartPrice + ", orderNo=" + orderNo + ", productName=" + productName
+				+ ", firstOptionName=" + firstOptionName + ", secondOptionName=" + secondOptionName + "]";
 	}
 	
 }
