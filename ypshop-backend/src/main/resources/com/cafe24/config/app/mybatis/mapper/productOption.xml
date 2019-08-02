@@ -35,4 +35,13 @@
 	]]>
 	</select>
 	
+	<!-- 재고수량 감소 -->
+	<update id="updateRemainAmount" parameterType="cartvo">
+	<![CDATA[
+		update product_option
+		set remainAmount=remainAmount-#{cartAmount}
+		where no=#{productOptionNo}
+	]]>
+	</update>
+	
 </mapper>

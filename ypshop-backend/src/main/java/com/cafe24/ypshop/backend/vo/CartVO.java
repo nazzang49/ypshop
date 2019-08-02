@@ -24,6 +24,8 @@ public class CartVO {
 	private String firstOptionName;
 	//2차 옵션명
 	private String secondOptionName;
+	//상품옵션별 재고수량
+	private Long remainAmount;
 		
 	public Long getOrderNo() {
 		return orderNo;
@@ -79,12 +81,19 @@ public class CartVO {
 	public void setSecondOptionName(String secondOptionName) {
 		this.secondOptionName = secondOptionName;
 	}
-
+	public Long getRemainAmount() {
+		return remainAmount;
+	}
+	public void setRemainAmount(Long remainAmount) {
+		this.remainAmount = remainAmount;
+	}
+	
 	@Override
 	public String toString() {
 		return "CartVO [no=" + no + ", memberId=" + memberId + ", productOptionNo=" + productOptionNo + ", cartAmount="
 				+ cartAmount + ", cartPrice=" + cartPrice + ", orderNo=" + orderNo + ", productName=" + productName
-				+ ", firstOptionName=" + firstOptionName + ", secondOptionName=" + secondOptionName + "]";
+				+ ", firstOptionName=" + firstOptionName + ", secondOptionName=" + secondOptionName + ", remainAmount="
+				+ remainAmount + "]";
 	}
 	
 }

@@ -39,4 +39,9 @@ public class CartDAO {
 		return sqlSession.selectOne("cart.selectByNo", no);
 	}
 	
+	//장바구니 수량, 상품옵션 재고수량 비교
+	public CartVO selectAmountByNo(Long no) {
+		return sqlSession.selectOne("cart.selectAmountByNo", no);
+	}
+	
 }

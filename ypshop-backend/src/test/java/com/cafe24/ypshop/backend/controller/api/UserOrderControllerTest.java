@@ -275,7 +275,7 @@ public class UserOrderControllerTest {
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.flag", is(true)));
+		.andExpect(jsonPath("$.data.returnMsg", is("주문 성공")));
 		
 		//2. fail >> invalidation in pattern of customerName
 		resultActions = 

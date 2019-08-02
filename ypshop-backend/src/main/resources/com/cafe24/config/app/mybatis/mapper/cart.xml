@@ -60,5 +60,15 @@
 	]]>
 	</select>
 	
+	<!-- 주문 가능 여부 by 수량 비교 -->
+	<select id="selectAmountByNo" parameterType="long" resultType="cartvo">
+	<![CDATA[
+		select c.cartAmount, c.productOptionNo, po.remainAmount as remainAmount
+		from cart c, product_option po
+		where c.productOptionNo=po.no
+		and c.no=#{no}
+	]]>
+	</select>
+	
 
 </mapper>

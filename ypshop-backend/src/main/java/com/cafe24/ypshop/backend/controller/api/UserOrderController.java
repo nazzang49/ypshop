@@ -138,10 +138,12 @@ public class UserOrderController {
 			}
 		}
 		
-		boolean flag = userOrderService.주문추가(orderVO);
+		String returnMsg = userOrderService.주문추가(orderVO);
+		
+		System.out.println("리턴 메시지 : "+returnMsg);
 		
 		Map<String, Object> data = new HashMap<>();
-		data.put("flag", flag);
+		data.put("returnMsg", returnMsg);
 		JSONResult result = JSONResult.success(data);
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
