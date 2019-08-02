@@ -16,8 +16,8 @@ public class AdminCategoryService {
 	private CategoryDAO cateogryDao;
 	
 	//카테고리 목록
-	public List<CategoryVO> 카테고리목록() {
-		return cateogryDao.selectAll();
+	public List<CategoryVO> 카테고리목록(String searchType, String searchKwd) {
+		return cateogryDao.selectAll(searchType, searchKwd);
 	}
 	
 	//카테고리 추가

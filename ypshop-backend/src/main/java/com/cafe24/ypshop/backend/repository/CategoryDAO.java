@@ -1,6 +1,9 @@
 package com.cafe24.ypshop.backend.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -19,8 +22,11 @@ public class CategoryDAO {
 	}
 	
 	//카테고리 목록
-	public List<CategoryVO> selectAll() {
-		return sqlSession.selectList("category.selectAll");
+	public List<CategoryVO> selectAll(String searchType, String searchKwd) {
+		Map<String, String> map = new HashMap<>();
+		map.put("searchType", searchType);
+		map.put("searchKwd", searchKwd);
+		return sqlSession.selectList("category.selectAll", map);
 	}
 		
 	//카테고리 수정

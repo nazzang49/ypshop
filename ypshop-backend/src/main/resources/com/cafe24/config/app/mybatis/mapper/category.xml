@@ -16,10 +16,21 @@
 	</insert>
 	
 	<!-- 카테고리 목록 -->
-	<select id="selectAll" resultType="categoryvo">
+	<select id="selectAll" parameterType="map" resultType="categoryvo">
 	<![CDATA[
-		select * from category
+		select *
+		from category
 	]]>
+		<if test="searchType=='name'">
+		<![CDATA[
+			where name like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='groupNo'">
+		<![CDATA[
+			where groupNo like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
 	</select>
 	
 	<!-- 카테고리 수정 -->

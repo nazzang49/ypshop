@@ -57,24 +57,27 @@ public class AdminCategoryControllerTest {
 				.build();
 	}
 	
-	//카테고리 목록
+	//카테고리 목록 by 검색 >> name, groupNo
 	@Test
 	public void testBCategoryListRead() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
-		String accessToken_bitApp = "Yv211527D1fVvuO3eeh73Z";
 
 		//1. success
 		ResultActions resultActions = 
 				mockMvc.perform(get("/api/admin/category/list")
 						.header("Authorization", "Bearer " + accessToken)
+						.param("searchType", "groupNo")
+						.param("searchKwd", "1")
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
+		//1번 카테고리
 		.andExpect(jsonPath("$.data.categoryList[0].no", is(1)))
 		.andExpect(jsonPath("$.data.categoryList[0].name", is("category1-1")))
 		.andExpect(jsonPath("$.data.categoryList[0].depth", is(1)))
+		//2번 카테고리
 		.andExpect(jsonPath("$.data.categoryList[1].no", is(2)))
 		.andExpect(jsonPath("$.data.categoryList[1].name", is("category1-2")))
 		.andExpect(jsonPath("$.data.categoryList[1].depth", is(2)));

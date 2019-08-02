@@ -52,18 +52,15 @@ public class AdminCategoryController {
 	
 	@ApiOperation(value="카테고리 목록")
 	@GetMapping(value="/list")
-	public JSONResult getList() {
+	public JSONResult getList(@RequestParam(value="searchType", required=true, defaultValue="") String searchType,
+							  @RequestParam(value="searchKwd", required=true, defaultValue="") String searchKwd) {
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
 		
 		//관리자 인증
 		
-		List<CategoryVO> categoryList = adminCategoryService.카테고리목록();
-		
-		if(categoryList.isEmpty()) {
-			return JSONResult.fail("categoryList is null");
-		}
+		List<CategoryVO> categoryList = adminCategoryService.카테고리목록(searchType, searchKwd);
 		
 		data.put("categoryList", categoryList);
 		JSONResult result = JSONResult.success(data);
