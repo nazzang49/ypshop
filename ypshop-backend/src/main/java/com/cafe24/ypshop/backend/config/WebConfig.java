@@ -14,7 +14,7 @@ import com.cafe24.config.web.SwaggerConfig;
 @Configuration
 @EnableWebMvc
 @EnableAspectJAutoProxy
-@ComponentScan({"com.cafe24.ypshop.backend.controller", "com.cafe24.ypshop.backend.exception", "com.cafe24.ypshop.backend.controller.api"})
+@ComponentScan({"com.cafe24.ypshop.backend.controller", "com.cafe24.ypshop.backend.exception", "com.cafe24.ypshop.backend.controller.api", "com.cafe24.ypshop.backend.repository"})
 @Import({MVCConfig.class, MessageConfig.class, SwaggerConfig.class, FileUploadConfig.class})
 public class WebConfig {
 	

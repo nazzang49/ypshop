@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cafe24.ypshop.backend.dto.ImageDTO;
 import com.cafe24.ypshop.backend.repository.ImageDAO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.ProductVO;
@@ -22,12 +23,12 @@ public class AdminImageService {
 	}
 	
 	//이미지 추가
-	public String 이미지추가(List<String> imageUrlList, Long productNo) {
+	public String 이미지추가(List<ImageDTO> imageDtoList) {
 		StringBuilder returnMsg = new StringBuilder();
-		for(int i=0;i<imageUrlList.size();i++) {
-			String imageUrl = imageUrlList.get(i);
+		for(int i=0;i<imageDtoList.size();i++) {
+			ImageDTO imageDTO = imageDtoList.get(i);
 			//중복 X >> 추가 성공 >> 성공 메시지
-			if(imageDao.checkExist(productNo, imageUrl)==null) imageDao.insert(new ImageVO(productNo, imageUrl, "B"));
+			if(imageDao.checkExist(imageDTO)==null) imageDao.insert(imageDTO);
 			//중복 O >> 추가 실패 >> 실패 메시지
 			else {
 				returnMsg.append((i+1)+"번 ");

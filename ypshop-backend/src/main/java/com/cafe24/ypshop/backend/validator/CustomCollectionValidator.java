@@ -25,7 +25,7 @@ public class CustomCollectionValidator implements Validator {
 	@Override
     public void validate(Object target, Errors errors) {
         if(target instanceof Collection){
-        	Collection collection = (Collection)target;
+        	Collection<?> collection = (Collection<?>)target;
 
         	for (Object object : collection) {
                 validator.validate(object, errors);

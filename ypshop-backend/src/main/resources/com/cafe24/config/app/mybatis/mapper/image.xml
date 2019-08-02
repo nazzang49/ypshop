@@ -4,17 +4,17 @@
 <mapper namespace="image">
 
 	<!-- 이미지 중복 체크 -->
-	<select id="checkExist" parameterType="map" resultType="imagevo">
+	<select id="checkExist" parameterType="imagedto" resultType="imagevo">
 	<![CDATA[
 		select *
 		from image
-		where url=#{imageUrl}
+		where url=#{url}
 		and productNo=#{productNo}
 	]]>
 	</select>
 
 	<!-- 이미지 추가 -->
-	<insert id="insert" parameterType="imagevo">
+	<insert id="insert" parameterType="imagedto">
 	<![CDATA[
 		insert into image
 		values(

@@ -7,6 +7,7 @@
 		<typeAlias alias="cartvo" type="com.cafe24.ypshop.backend.vo.CartVO"/>
 		<typeAlias alias="productvo" type="com.cafe24.ypshop.backend.vo.ProductVO"/>
 		<typeAlias alias="imagevo" type="com.cafe24.ypshop.backend.vo.ImageVO"/>
+		<typeAlias alias="imagedto" type="com.cafe24.ypshop.backend.dto.ImageDTO"/>
 		<typeAlias alias="optionvo" type="com.cafe24.ypshop.backend.vo.OptionVO"/>
 		<typeAlias alias="ordervo" type="com.cafe24.ypshop.backend.vo.OrderVO"/>
 		<typeAlias alias="orderdetailvo" type="com.cafe24.ypshop.backend.vo.OrderDetailVO"/>

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cafe24.ypshop.backend.dto.ImageDTO;
 import com.cafe24.ypshop.backend.repository.ImageDAO;
 import com.cafe24.ypshop.backend.repository.OptionDAO;
 import com.cafe24.ypshop.backend.repository.ProductDAO;
@@ -42,8 +43,14 @@ public class AdminProductService {
 		
 		//이미지 추가 >> set 상품번호
 		for(ImageVO imageVO : productVO.getImageList()) {
-			imageVO.setProductNo(productNo);
-			imageDao.insert(imageVO);
+			
+			//dto 변환
+			ImageDTO imageDTO = new ImageDTO();
+			imageDTO.setProductNo(productNo);
+			imageDTO.setUrl(imageVO.getUrl());
+			imageDTO.setRepOrBasic(imageVO.getRepOrBasic());
+			
+			imageDao.insert(imageDTO);
 		}
 		
 		//옵션 추가 >> set 상품번호

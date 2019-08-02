@@ -4,23 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cafe24.ypshop.backend.dto.ImageDTO;
 import com.cafe24.ypshop.backend.dto.JSONResult;
 import com.cafe24.ypshop.backend.service.AdminImageService;
 import com.cafe24.ypshop.backend.service.AdminOptionService;
@@ -61,6 +57,8 @@ public class AdminProductController {
 	
 	@Autowired
 	private AdminProductOptionService adminProductOptionService;
+	
+	@Autowired CustomCollectionValidator customCollectionValidator;
 	
 	@ApiOperation(value="상품 목록")
 	@GetMapping(value= {"/list", "/list/{categoryNo}"})
@@ -189,14 +187,25 @@ public class AdminProductController {
 	
 	@ApiOperation(value="이미지 추가")
 	@PostMapping(value="/{productNo}/image/add")
-	public ResponseEntity<JSONResult> imageAdd(@RequestParam(value="url", required=true) List<String> imageUrlList,
+	public ResponseEntity<JSONResult> imageAdd(@RequestBody @Valid List<ImageDTO> imageDtoList,
+											   BindingResult br,
 											   @PathVariable(value="productNo") Long productNo) {
 
 		//관리자 인증
 		
-		//valid by JS
+		//imageDtoList valid
+		customCollectionValidator.validate(imageDtoList, br);
 		
-		String returnMsg = adminImageService.이미지추가(imageUrlList, productNo);
+		if(br.hasErrors()) {
+			List<ObjectError> errorList = br.getAllErrors();
+			for(ObjectError error : errorList) {
+				String msg = error.getDefaultMessage();
+				JSONResult result = JSONResult.fail(msg);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);	
+			}
+		}
+		
+		String returnMsg = adminImageService.이미지추가(imageDtoList);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();

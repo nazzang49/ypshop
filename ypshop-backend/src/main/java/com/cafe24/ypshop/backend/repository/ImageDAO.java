@@ -7,6 +7,8 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.cafe24.ypshop.backend.dto.ImageDTO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.ProductVO;
 
@@ -17,16 +19,13 @@ public class ImageDAO {
 	private SqlSession sqlSession;
 	
 	//(관리자) 이미지 중복 체크
-	public ImageVO checkExist(Long productNo, String imageUrl) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("imageUrl", imageUrl);
-		map.put("productNo", productNo);
-		return sqlSession.selectOne("image.checkExist", map); 
+	public ImageVO checkExist(ImageDTO imageDTO) {
+		return sqlSession.selectOne("image.checkExist", imageDTO);
 	}
 	
 	//(관리자) 이미지 추가
-	public boolean insert(ImageVO imageVO) {
-		return sqlSession.insert("image.insert", imageVO)==1;
+	public boolean insert(ImageDTO imageDTO) {
+		return sqlSession.insert("image.insert", imageDTO)==1;
 	}
 	
 	//(관리자) 이미지 삭제

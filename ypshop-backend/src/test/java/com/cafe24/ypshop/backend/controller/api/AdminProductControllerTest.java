@@ -35,6 +35,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import com.cafe24.ypshop.backend.config.AppConfig;
 import com.cafe24.ypshop.backend.config.TestWebConfig;
+import com.cafe24.ypshop.backend.dto.ImageDTO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.OptionVO;
 import com.cafe24.ypshop.backend.vo.ProductVO;
@@ -282,7 +283,7 @@ public class AdminProductControllerTest {
 		resultActions = 
 				mockMvc.perform(delete("/api/admin/product/delete/{no}",3L)
 						.header("Authorization", "Bearer " + accessToken)
-						.param("alignNo", "3")
+						.param("alignNo", "3")	
 						.contentType(MediaType.APPLICATION_JSON));
 	
 		resultActions
@@ -295,14 +296,18 @@ public class AdminProductControllerTest {
 	public void testEImageWrite() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
-		//1. success
+		List<ImageDTO> imageDtoList = new ArrayList<>();
+		
+		ImageDTO imageDTO = new ImageDTO();
+		imageDtoList.add(new ImageDTO("image11", 1L, "B"));
+		imageDtoList.add(new ImageDTO("image12", 1L, "B"));
+		imageDtoList.add(new ImageDTO("image13", 1L, "B"));
+				
+		//2. success
 		ResultActions resultActions = 
 				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 1L)
 						.header("Authorization", "Bearer " + accessToken)
-						.param("url", "image11")
-						.param("url", "image12")
-						.param("url", "image13")
-						.contentType(MediaType.APPLICATION_JSON));
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(imageDtoList)));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
@@ -313,14 +318,24 @@ public class AdminProductControllerTest {
 		resultActions = 
 				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 1L)
 						.header("Authorization", "Bearer " + accessToken)
-						.param("url", "image1")
-						.param("url", "image6")
-						.contentType(MediaType.APPLICATION_JSON));
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(imageDtoList)));
 
 		resultActions
 		.andExpect(status().isOk()).andDo(print())
 		.andExpect(jsonPath("$.result", is("success")))
-		.andExpect(jsonPath("$.data.returnMsg", is("1번 2번 이미지 추가 실패 >> 중복")));
+		.andExpect(jsonPath("$.data.returnMsg", is("1번 2번 3번 이미지 추가 실패 >> 중복")));
+		
+		imageDtoList.add(new ImageDTO(null, 1L, "B"));
+		
+		//2. fail >> invalidation in not empty of url
+		resultActions = 
+				mockMvc.perform(post("/api/admin/product/{productNo}/image/add", 1L)
+						.header("Authorization", "Bearer " + accessToken)
+						.contentType(MediaType.APPLICATION_JSON).content(new Gson().toJson(imageDtoList)));
+
+		resultActions
+		.andExpect(status().isBadRequest()).andDo(print())
+		.andExpect(jsonPath("$.result", is("fail")));
 		
 	}
 	
