@@ -60,7 +60,7 @@
 	</select>
 	
 	<!-- (관리자) 주문 목록 -->
-	<select id="selectAll" parameterType="string" resultType="ordervo">
+	<select id="selectAll" parameterType="map" resultType="ordervo">
 	<![CDATA[
 		select
 		no,
@@ -79,6 +79,31 @@
 		status
 		from orders
 	]]>
+		<if test="searchType=='memberId'">
+		<![CDATA[
+			where memberId like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='orderDate'">
+		<![CDATA[
+			where orderDate like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='status'">
+		<![CDATA[
+			where status like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='customerName'">
+		<![CDATA[
+			where cast(aes_decrypt(customerName, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='receiverName'">
+		<![CDATA[
+			where cast(aes_decrypt(receiverName, #{keyValue}) as char) like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
 	</select>
 	
 	<!-- 주문 상품별 상세 정보 -->

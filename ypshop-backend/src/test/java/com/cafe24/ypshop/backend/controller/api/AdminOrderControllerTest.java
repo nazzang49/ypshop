@@ -60,7 +60,7 @@ public class AdminOrderControllerTest {
 				.build();
 	}
 	
-	//주문 목록
+	//주문 목록 by 검색 >> 아이디, 주문일, 주문상태, 주문자 이름, 수령자 이름
 	@Test
 	public void testAOrderListRead() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
@@ -69,6 +69,8 @@ public class AdminOrderControllerTest {
 		ResultActions resultActions = 
 				mockMvc.perform(get("/api/admin/order/list")
 						.header("Authorization", "Bearer " + accessToken)
+						.param("searchType", "memberId")
+						.param("searchKwd", "user2")
 						.contentType(MediaType.APPLICATION_JSON));
 		
 		resultActions

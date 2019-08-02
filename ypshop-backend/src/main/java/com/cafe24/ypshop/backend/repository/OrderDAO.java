@@ -60,8 +60,12 @@ public class OrderDAO {
 	}
 	
 	//(관리자) 주문 목록
-	public List<OrderVO> selectAll(){
-		return sqlSession.selectList("order.selectAll", keyValue);
+	public List<OrderVO> selectAll(String searchType, String searchKwd){
+		Map<String, String> map = new HashMap<>();
+		map.put("searchType", searchType);
+		map.put("searchKwd", searchKwd);
+		map.put("keyValue", keyValue);
+		return sqlSession.selectList("order.selectAll", map);
 	}
 	
 	//(관리자) 주문 상태 수정

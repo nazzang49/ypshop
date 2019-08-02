@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cafe24.ypshop.backend.dto.JSONResult;
@@ -44,11 +45,12 @@ public class AdminOrderController {
 	
 	@ApiOperation(value="주문 목록")
 	@GetMapping(value="/list")
-	public JSONResult getList() {
+	public JSONResult getList(@RequestParam(value="searchType", required=true, defaultValue="") String searchType,
+			  				  @RequestParam(value="searchKwd", required=true, defaultValue="") String searchKwd) {
 		
 		//관리자 인증
 		
-		List<OrderVO> orderList = adminOrderService.주문목록();
+		List<OrderVO> orderList = adminOrderService.주문목록(searchType, searchKwd);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();

@@ -14,8 +14,8 @@ public class AdminOrderService {
 	private OrderDAO orderDao;
 	
 	//주문 목록
-	public List<OrderVO> 주문목록() {
-		return orderDao.selectAll();
+	public List<OrderVO> 주문목록(String searchType, String searchKwd) {
+		return orderDao.selectAll(searchType, searchKwd);
 	}
 	
 	//주문 상태 수정
