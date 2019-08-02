@@ -35,7 +35,7 @@
 	</select>
 	
 	<!-- 상품 목록 -->
-	<select id="selectAllByCategoryNo" parameterType="productvo" resultType="productvo">
+	<select id="selectAllByCategoryNo" parameterType="map" resultType="productvo">
 	<![CDATA[
 		select *
 		from product
@@ -44,10 +44,47 @@
 		<when test="categoryNo!=null">
 	<![CDATA[
 		where categoryNo=#{categoryNo}
+	]]>
+		<if test="searchType=='name'">
+		<![CDATA[
+			and name like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='shortDescription'">
+		<![CDATA[
+			and shortDescription like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='alignUse'">
+		<![CDATA[
+			and alignUse like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+	<![CDATA[
 		order by alignNo desc
 	]]>
 		</when>
 		<otherwise>
+		<if test="searchType=='name'">
+		<![CDATA[
+			where name like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='categoryNo'">
+		<![CDATA[
+			where categoryNo like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='shortDescription'">
+		<![CDATA[
+			where shortDescription like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
+		<if test="searchType=='alignUse'">
+		<![CDATA[
+			where alignUse like concat('%',#{searchKwd},'%')
+		]]>
+		</if>
 	<![CDATA[
 		order by no desc
 	]]>

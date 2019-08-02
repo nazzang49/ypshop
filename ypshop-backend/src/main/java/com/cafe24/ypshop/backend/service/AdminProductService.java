@@ -28,8 +28,11 @@ public class AdminProductService {
 	private OptionDAO optionDao;
 	
 	//상품 목록 >> 비진열 포함
-	public List<ProductVO> 상품목록(ProductVO productVO) {
-		return productDao.selectAllByCategoryNo(productVO);
+	public List<ProductVO> 상품목록(Long categoryNo, String searchType, String searchKwd) {
+		
+		System.out.println("검색 타입 : "+categoryNo);
+		
+		return productDao.selectAllByCategoryNo(categoryNo, searchType, searchKwd);
 	}
 	
 	//상품 추가

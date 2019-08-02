@@ -65,15 +65,18 @@ public class AdminProductControllerTest {
 				.build();
 	}
 	
-	//상품 목록
+	//상품 목록 by 검색 >> 상품명, 카테고리 번호, 상품 설명, 진열 구분
 	@Test
 	public void testBProductListRead() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
 		//카테고리 >> 진열번호 desc
 		ResultActions resultActions = 
-				mockMvc.perform(get("/api/admin/product/list/{categoryNo}",1L)
+				mockMvc.perform(get("/api/admin/product/list")
 						.header("Authorization", "Bearer " + accessToken)
+						.param("categoryNo", "1")
+						.param("searchType", "name")
+						.param("searchKwd", "product")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -86,6 +89,8 @@ public class AdminProductControllerTest {
 		resultActions = 
 				mockMvc.perform(get("/api/admin/product/list")
 						.header("Authorization", "Bearer " + accessToken)
+						.param("searchType", "name")
+						.param("searchKwd", "product")
 						.contentType(MediaType.APPLICATION_JSON));
 
 		resultActions
@@ -292,7 +297,7 @@ public class AdminProductControllerTest {
 	}
 	
 	//이미지 추가
-	@Test
+//	@Test
 	public void testEImageWrite() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
@@ -340,7 +345,7 @@ public class AdminProductControllerTest {
 	}
 	
 	//이미지 목록
-	@Test
+//	@Test
 	public void testIImageListRead() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
@@ -371,7 +376,7 @@ public class AdminProductControllerTest {
 	}
 	
 	//이미지 삭제
-	@Test
+//	@Test
 	public void testFImageDelete() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
@@ -409,7 +414,7 @@ public class AdminProductControllerTest {
 	}
 	
 	//옵션 목록
-	@Test
+//	@Test
 	public void testJOptionListRead() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		
@@ -438,7 +443,7 @@ public class AdminProductControllerTest {
 	}
 	
 	//옵션 추가
-	@Test
+//	@Test
 	public void testGOptionWrite() throws Exception {
 		String accessToken = obtainAccessToken("user1", "jy@park2@@", "ADMIN");
 		

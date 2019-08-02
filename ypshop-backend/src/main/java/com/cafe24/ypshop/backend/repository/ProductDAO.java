@@ -1,6 +1,8 @@
 package com.cafe24.ypshop.backend.repository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,12 @@ public class ProductDAO {
 	}
 	
 	//(관리자) 상품 목록
-	public List<ProductVO> selectAllByCategoryNo(ProductVO productVO) {
-		return sqlSession.selectList("product.selectAllByCategoryNo", productVO);
+	public List<ProductVO> selectAllByCategoryNo(Long categoryNo, String searchType, String searchKwd) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("searchType", searchType);
+		map.put("searchKwd", searchKwd);
+		map.put("categoryNo", categoryNo);
+		return sqlSession.selectList("product.selectAllByCategoryNo", map);
 	}
 	
 	//(관리자) 상품 수정

@@ -36,6 +36,8 @@ import com.cafe24.ypshop.backend.validator.CustomCollectionValidator;
 import com.cafe24.ypshop.backend.vo.OptionVO;
 import com.cafe24.ypshop.backend.vo.ImageVO;
 import com.cafe24.ypshop.backend.vo.ProductVO;
+import com.google.common.base.Optional;
+
 import io.swagger.annotations.ApiOperation;
 
 //(관리자) 상품 컨트롤러
@@ -61,12 +63,14 @@ public class AdminProductController {
 	@Autowired CustomCollectionValidator customCollectionValidator;
 	
 	@ApiOperation(value="상품 목록")
-	@GetMapping(value= {"/list", "/list/{categoryNo}"})
-	public JSONResult getProductList(@ModelAttribute ProductVO productVO) {
+	@GetMapping(value= "/list")
+	public JSONResult getProductList(@RequestParam(value="categoryNo", required=false) Long categoryNo,
+									 @RequestParam(value="searchType", required=true, defaultValue="") String searchType,
+									 @RequestParam(value="searchKwd", required=true, defaultValue="") String searchKwd) {
 		
 		//관리자 인증
-	
-		List<ProductVO> productList = adminProductService.상품목록(productVO);
+		
+		List<ProductVO> productList = adminProductService.상품목록(categoryNo, searchType, searchKwd);
 		
 		//리턴 데이터
 		Map<String, Object> data = new HashMap<>();
